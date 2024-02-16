@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8.3.0
+    ports:
+      - "3306:3306"
+    environment:
+      TZ: "Asia/Tokyo"
+    env_file:
+      - .env.local
+    restart: always
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/conf.d:/etc/mysql/conf.d
