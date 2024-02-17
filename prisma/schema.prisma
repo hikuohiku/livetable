@@ -9,3 +9,70 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  uuid  String  @id
+  email String  @unique
+  name  String?
+
+  googleUser    GoogleUser?
+  subscriptions Subscription[]
+  schedules     UserSchedule[]
+
+  @@map("users")
+}
+
+model GoogleUser {
+  user   User   @relation(fields: [userId], references: [uuid])
+  userId String @id @map("user_id")
+  token  String
+
+  @@map("google_users")
+}
+
+model Channel {
+  channelId   String  @id @map("channel_id")
+  channelName String? @map("channel_name")
+  handle      String?
+
+  streams       Stream[]
+  subscriptions Subscription[]
+
+  @@map("channels")
+}
+
+model Stream {
+  videoId     String   @id @map("video_id")
+  channel     Channel  @relation(fields: [channelId], references: [channelId])
+  channelId   String   @map("channel_id")
+  title       String?
+  description String?
+  startAt     DateTime @map("start_at")
+
+  schedules UserSchedule[]
+
+  @@map("streams")
+}
+
+model Subscription {
+  user      User     @relation(fields: [userId], references: [uuid])
+  userId    String   @map("user_id")
+  channel   Channel  @relation(fields: [channelId], references: [channelId])
+  channelId String   @map("channel_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@id([userId, channelId])
+  @@map("subscriptions")
+}
+
+model UserSchedule {
+  user      User    @relation(fields: [userId], references: [uuid])
+  userId    String  @map("user_id")
+  stream    Stream  @relation(fields: [videoId], references: [videoId])
+  videoId   String  @map("video_id")
+  isNoticed Boolean @default(false) @map("is_noticed")
+
+  @@id([userId, videoId])
+  @@map("user_schedules")
+}
