@@ -23,9 +23,10 @@ model User {
 }
 
 model GoogleUser {
-  user   User   @relation(fields: [userId], references: [uuid])
-  userId String @id @map("user_id")
-  token  String
+  user         User   @relation(fields: [userId], references: [uuid])
+  userId       String @id @map("user_id")
+  refreshToken String @map("refresh_token")
+  accessToken  String @map("access_token")
 
   @@map("google_users")
 }
