@@ -16,6 +16,7 @@ if (!clientSecret) {
 const prisma = new PrismaClient();
 
 const handler = NextAuth({
+  secret: process.env.AUTH_SECRET,
   providers: [
     GoogleProvider({
       clientId: clientId,
