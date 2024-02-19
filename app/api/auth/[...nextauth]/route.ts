@@ -21,6 +21,11 @@ const handler = NextAuth({
     GoogleProvider({
       clientId: clientId,
       clientSecret: clientSecret,
+      authorization: {
+        params: {
+          access_type: "offline",
+        },
+      }
     }),
   ],
   callbacks: {
