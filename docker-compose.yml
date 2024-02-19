@@ -10,5 +10,5 @@ services:
       - .env.local
     restart: always
     volumes:
-      - ./mysql/data:/var/lib/mysql
-      - ./mysql/my.cnf:/etc/my.cnf
+      - ./database/data:/var/lib/mysql
+      - ./database/my.cnf:/etc/my.cnf
