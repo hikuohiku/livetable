@@ -1,6 +1,6 @@
 import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prismaClient";
 import { v4 as uuidv4 } from "uuid";
 
 const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -12,8 +12,6 @@ if (!clientId) {
 if (!clientSecret) {
   throw new Error("GOOGLE_CLIENT_SECRET is not set");
 }
-
-const prisma = new PrismaClient();
 
 const handler = NextAuth({
   secret: process.env.AUTH_SECRET,
