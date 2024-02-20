@@ -50,15 +50,21 @@ const handler = NextAuth({
 
         const userId = user.uuid;
 
-        await prisma.googleUser.upsert({
-          where: { userId },
-          update: refreshToken ? { accessToken, refreshToken } : { accessToken },
-          create: {
-            userId,
-            refreshToken,
-            accessToken,
-          },
-        });
+        try {
+          await prisma.googleUser.upsert({
+            where: { userId },
+            update: refreshToken ? { accessToken, refreshToken } : { accessToken },
+            create: {
+              userId,
+              refreshToken,
+              accessToken,
+            },
+          });
+        } catch (e) {
+          console.error(e);
+          // TODO: ここにサインアップ時にリフレッシュトークンが帰ってこなかったときのエラー処理を書く
+          // ユーザー側のOAuthの登録を解除とかしないといけない気がする．
+        }
 
         token = {
           ...token,
