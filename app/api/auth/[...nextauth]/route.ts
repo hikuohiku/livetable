@@ -1,16 +1,16 @@
-import NextAuth from "next-auth/next";
-import GoogleProvider from "next-auth/providers/google";
-import prisma from "@/lib/prismaClient";
-import { v4 as uuidv4 } from "uuid";
+import NextAuth from 'next-auth/next';
+import GoogleProvider from 'next-auth/providers/google';
+import prisma from '@/lib/prismaClient';
+import { v4 as uuidv4 } from 'uuid';
 
 const clientId = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
 if (!clientId) {
-  throw new Error("GOOGLE_CLIENT_ID is not set");
+  throw new Error('GOOGLE_CLIENT_ID is not set');
 }
 if (!clientSecret) {
-  throw new Error("GOOGLE_CLIENT_SECRET is not set");
+  throw new Error('GOOGLE_CLIENT_SECRET is not set');
 }
 
 const handler = NextAuth({
@@ -21,45 +21,49 @@ const handler = NextAuth({
       clientSecret: clientSecret,
       authorization: {
         params: {
-          access_type: "offline",
+          access_type: 'offline',
         },
-      }
+      },
     }),
   ],
   callbacks: {
     async jwt({ token, account, profile }) {
       // サインインのときだけ発火
-      if (account && account.provider === "google" && profile) {
-        const uuid = token.uuid ? token.uuid as string : uuidv4();
+      if (account && account.provider === 'google' && profile) {
+        const uuid = token.uuid ? (token.uuid as string) : uuidv4();
         const email = profile.email as string;
         const name = profile.name as string;
 
         const user = await prisma.user.upsert({
-          where: { email: email },
-          update: { name: name },
-          create: { uuid: uuid, email: email, name: name },
-        })
+          where: { email },
+          update: { name },
+          create: { uuid, email, name },
+        });
 
         const userId = user.uuid;
         const refreshToken = account.refresh_token as string;
         const accessToken = account.access_token as string;
 
         await prisma.googleUser.upsert({
-          where: { userId: userId },
-          update: { accessToken: accessToken },
-          create: { userId: userId, refreshToken: refreshToken, accessToken: accessToken },
-        })
+          where: { userId },
+          update: { accessToken },
+          create: {
+            userId,
+            refreshToken,
+            accessToken,
+          },
+        });
 
         token = {
           ...token,
           uuid: user.uuid,
-        }
+        };
         return token;
       }
 
       return token;
-    }
-  }
+    },
+  },
 });
 
 export { handler as GET, handler as POST };
