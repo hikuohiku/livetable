@@ -46,7 +46,7 @@ const handler = NextAuth({
 
         await prisma.googleUser.upsert({
           where: { userId: userId },
-          update: { refreshToken: refreshToken, accessToken: accessToken },
+          update: { accessToken: accessToken },
           create: { userId: userId, refreshToken: refreshToken, accessToken: accessToken },
         })
 
