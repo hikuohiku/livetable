@@ -1,7 +1,6 @@
 import NextAuth from 'next-auth/next';
 import GoogleProvider from 'next-auth/providers/google';
 import prisma from '@/lib/prismaClient';
-import { v4 as uuidv4 } from 'uuid';
 
 const clientId = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
@@ -30,23 +29,30 @@ const handler = NextAuth({
     async jwt({ token, account, profile }) {
       // サインインのときだけ発火
       if (account && account.provider === 'google' && profile) {
-        const uuid = token.uuid ? (token.uuid as string) : uuidv4();
-        const email = profile.email as string;
-        const name = profile.name as string;
+        if (!(profile.email && profile.name)) {
+          throw new Error('email and name are required');
+        }
 
+        const email = profile.email;
+        const name = profile.name;
         const user = await prisma.user.upsert({
           where: { email },
           update: { name },
-          create: { uuid, email, name },
+          create: { email, name },
         });
 
-        const userId = user.uuid;
         const refreshToken = account.refresh_token as string;
-        const accessToken = account.access_token as string;
+        const accessToken = account.access_token;
+
+        if (!accessToken) {
+          throw new Error('accessToken is required');
+        }
+
+        const userId = user.uuid;
 
         await prisma.googleUser.upsert({
           where: { userId },
-          update: { accessToken },
+          update: refreshToken ? { accessToken, refreshToken } : { accessToken },
           create: {
             userId,
             refreshToken,
