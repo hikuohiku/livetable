@@ -43,3 +43,7 @@ export class YoutubeRssService {
   }
 
 }
+
+const youtubeRssService = new YoutubeRssService();
+
+export default youtubeRssService;

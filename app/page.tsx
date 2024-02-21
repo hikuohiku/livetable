@@ -7,9 +7,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 
 /* 確認用
-import { YoutubeRssService } from '@/services/youtubeRssService';
+import youtubeRssService from '@/services/youtubeRssService';
 
-const youtubeRssService = new YoutubeRssService();
 youtubeRssService.getStreams({ channelId: 'UCt30jJgChL8qeT9VPadidSw' }).then((streams) => {
   console.log(streams);
 }
