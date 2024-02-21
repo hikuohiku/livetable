@@ -13,10 +13,13 @@ export class YoutubeRssService {
   private parser: Parser;
 
   constructor() {
+    // 第一テンプレート引数は指定する必要ないが，暗黙的にデフォルト値を指定する方法がわからん
     this.parser = new Parser<any, CustomField>({
+      // rss-parserのデフォルトで定義されないフィールドを定義する
       customFields: {
         item: [
           ["yt:videoId", "videoId"],
+          // media:descriptionを直接取得する方法がわからなかったので親要素を取得してたどる
           ["media:group", "media:group", { keepArray: true }],
         ],
       },
@@ -24,8 +27,14 @@ export class YoutubeRssService {
   }
 
   private async getFeed(channel: Channel) {
-    const feed = await this.parser.parseURL(youtubeRssUrl + channel.channelId);
-    return feed;
+    try {
+      const feed = await this.parser.parseURL(youtubeRssUrl + channel.channelId);
+      return feed;
+    } catch (error) {
+      // TODO: この辺勉強してちゃんと書く
+      console.error(error);
+      throw new Error("Failed to get feed");
+    }
   }
 
   async getStreams(channel: Channel): Promise<Stream[]> {
@@ -35,7 +44,7 @@ export class YoutubeRssService {
         videoId: item.videoId,
         channelId: channel.channelId,
         title: item.title,
-        description: item["media:group"][0]["media:description"],
+        description: item["media:group"]?.[0]?.["media:description"] ?? "",
       };
       return stream;
     });
