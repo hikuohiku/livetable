@@ -58,7 +58,7 @@ const channel: Channel = {
   channelId: 'UCIBY1ollUsauvVi4hW4cumw',
 };
 
-getChannel(channel).then((channel) => {
+getChannel([channel]).then((channel) => {
   console.log(channel);
 });
 */

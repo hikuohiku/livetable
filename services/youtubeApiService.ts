@@ -84,27 +84,34 @@ export async function getSubscription(user: GoogleUser): Promise<Subscription[]>
   }
 }
 
-export async function getChannel(channel: Channel): Promise<Channel> {
+export async function getChannel(channels: Channel[]): Promise<Channel[]> {
   try {
     const responseData = await youtubeApiService.channels.list({
       key: apiKey,
-      part: ['snippet'],
-      id: [channel.channelId],
-      fields: 'items(snippet(title))',
+      part: ['snippet', 'id'],
+      id: channels.map(c => c.channelId),
+      fields: 'items(snippet(title),id)',
     }).then(response => response.data);
 
     // レスポンスのバリデーション
     if (!responseData.items) {
       throw new Error("Invalid response data from YouTube API");
     }
-    const responseItem = responseData.items[0];
+    const responseDataItems = responseData.items
 
     // channelを返す
-    if (!responseItem || !responseItem.snippet || !responseItem.snippet.title) {
-      throw new Error("Invalid response data from YouTube API");
-    }
+    const channelsWithTitle: Channel[] = channels.map((c) => {
+      const item = responseDataItems.find(item => item.id === c.channelId);
 
-    return { ...channel, channelName: responseItem.snippet.title };
+      if (!item || !item.snippet || !item.snippet.title) {
+        throw new Error("Invalid response data from YouTube API");
+      }
+      const title = item.snippet.title;
+
+      return { channelId: c.channelId, channelName: title };
+    });
+
+    return channelsWithTitle;
   } catch (e) {
     // TODO: エラー処理
     console.error(e);
