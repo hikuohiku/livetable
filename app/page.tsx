@@ -15,6 +15,26 @@ youtubeRssService.getStreams({ channelId: 'UCt30jJgChL8qeT9VPadidSw' }).then((st
 );
 */
 
+/* 確認用
+import { getStartAtTime } from '@/services/youtubeApiService';
+import Stream from '@/types/stream';
+
+const streams: Stream[] = [
+  {
+    videoId: 'zoHoVtb-yww',
+    channelId: 'UCvaTdHTWBGv3MKj3KVqJVCw',
+  },
+  {
+    videoId: 'T0-I9G9w7hA',
+    channelId: 'UCvaTdHTWBGv3MKj3KVqJVCw',
+  },
+];
+
+getStartAtTime(streams).then((streams) => {
+  console.log(streams);
+});
+*/
+
 export default function Page() {
   return (
     <AppBar>
