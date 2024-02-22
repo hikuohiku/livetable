@@ -35,6 +35,21 @@ getStartAtTime(streams).then((streams) => {
 });
 */
 
+/* 確認用
+import { getSubscription } from '@/services/youtubeApiService';
+import { GoogleUser } from '@/types/user';
+
+const user: GoogleUser = {
+  uuid: '1',
+  email: '1',
+  token: 'ya29.a0AfB_byBMBWacOsdbA7OLFFfaTgRt7jYww8MGl7ez659sqKu4yG0VgvW2_s-y4cDLR5t3_mb_sB84yx5sTjReXX0Kv8jjdV6rOSJc__F1LitFSQPkxNJ5zPMx6-tuXMR-f4C_DW7ic6jP50tfmnCBa_vIylCDs_eP3iKEaCgYKAcMSARMSFQHGX2MiKwv9KQrlJGgcgtJQUd9_0g0171',
+};
+
+getSubscription(user).then((subscription) => {
+  console.log(subscription);
+});
+*/
+
 export default function Page() {
   return (
     <AppBar>

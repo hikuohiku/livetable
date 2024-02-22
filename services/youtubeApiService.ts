@@ -1,7 +1,8 @@
 import Stream from "@/types/stream";
+import { GoogleUser, Subscription } from "@/types/user";
+
 
 import { google } from "googleapis";
-import { youtube } from "googleapis/build/src/apis/youtube";
 
 const apiKey = process.env.YOUTUBE_API_KEY;
 if (!apiKey) {
@@ -41,6 +42,39 @@ export async function getStartAtTime(streams: Stream[]): Promise<Stream[]> {
     });
 
     return streamWithStartAtTime;
+
+  } catch (e) {
+    // TODO: エラー処理
+    console.error(e);
+    throw new Error("Failed to fetch data from YouTube API");
+  }
+}
+
+export async function getSubscription(user: GoogleUser): Promise<Subscription[]> {
+  try {
+    const responseData = await youtubeApiService.subscriptions.list({
+      access_token: user.token,
+      part: ['snippet'],
+      fields: 'items(snippet(resourceId(channelId)))',
+      mine: true,
+    }).then(response => response.data);
+
+    // レスポンスのバリデーション
+    if (!responseData.items) {
+      throw new Error("Invalid response data from YouTube API");
+    }
+
+    // subscriptionを返す
+    const subscriptions: Subscription[] = responseData.items.map(item => {
+      if (!item.snippet || !item.snippet.resourceId || !item.snippet.resourceId.channelId) {
+        throw new Error("Invalid response data from YouTube API");
+      }
+
+      const channelId = item.snippet.resourceId.channelId;
+      return { channelId, userId: user.uuid };
+    });
+
+    return subscriptions;
 
   } catch (e) {
     // TODO: エラー処理
