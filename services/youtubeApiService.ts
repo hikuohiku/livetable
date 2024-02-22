@@ -15,6 +15,7 @@ export async function getStartAtTime(streams: Stream[]): Promise<Stream[]> {
     const responseData = await youtubeApiService.videos.list({
       key: apiKey,
       part: ['liveStreamingDetails'],
+      fields: 'items(id,liveStreamingDetails(actualStartTime,scheduledStartTime))',
       id: streams.map(s => s.videoId),
     }).then(response => response.data);
 
