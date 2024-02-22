@@ -50,6 +50,19 @@ getSubscription(user).then((subscription) => {
 });
 */
 
+/* 確認用
+import { getChannel } from '@/services/youtubeApiService';
+import Channel from '@/types/channel';
+
+const channel: Channel = {
+  channelId: 'UCIBY1ollUsauvVi4hW4cumw',
+};
+
+getChannel(channel).then((channel) => {
+  console.log(channel);
+});
+*/
+
 export default function Page() {
   return (
     <AppBar>

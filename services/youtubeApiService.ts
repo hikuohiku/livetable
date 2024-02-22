@@ -1,5 +1,6 @@
 import Stream from "@/types/stream";
 import { GoogleUser, Subscription } from "@/types/user";
+import Channel from "@/types/channel";
 
 
 import { google } from "googleapis";
@@ -76,6 +77,34 @@ export async function getSubscription(user: GoogleUser): Promise<Subscription[]>
 
     return subscriptions;
 
+  } catch (e) {
+    // TODO: エラー処理
+    console.error(e);
+    throw new Error("Failed to fetch data from YouTube API");
+  }
+}
+
+export async function getChannel(channel: Channel): Promise<Channel> {
+  try {
+    const responseData = await youtubeApiService.channels.list({
+      key: apiKey,
+      part: ['snippet'],
+      id: [channel.channelId],
+      fields: 'items(snippet(title))',
+    }).then(response => response.data);
+
+    // レスポンスのバリデーション
+    if (!responseData.items) {
+      throw new Error("Invalid response data from YouTube API");
+    }
+    const responseItem = responseData.items[0];
+
+    // channelを返す
+    if (!responseItem || !responseItem.snippet || !responseItem.snippet.title) {
+      throw new Error("Invalid response data from YouTube API");
+    }
+
+    return { ...channel, channelName: responseItem.snippet.title };
   } catch (e) {
     // TODO: エラー処理
     console.error(e);
