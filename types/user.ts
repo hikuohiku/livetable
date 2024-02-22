@@ -7,3 +7,8 @@ export default interface User {
 export interface GoogleUser extends User {
   token: string;
 }
+
+export interface Subscription {
+  userId: string;
+  channelId: string;
+}
