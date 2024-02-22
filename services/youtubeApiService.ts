@@ -1,6 +1,6 @@
-import Stream from "@/types/stream";
-import { GoogleUser, Subscription } from "@/types/user";
-import Channel from "@/types/channel";
+import Stream from "@/types/entities/stream";
+import { GoogleUser, Subscription } from "@/types/entities/user";
+import Channel from "@/types/entities/channel";
 
 
 import { google } from "googleapis";
