@@ -37,3 +37,12 @@ next-env.d.ts
 
 # mysql
 /database/data
+
+# yarn (not using Zero-Installs)
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
