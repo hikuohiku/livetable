@@ -1,9 +1,3 @@
-import Channel from "@/types/entities/channel";
-
-/**
- * entities
- */
-
 export default interface User {
   uuid: string;
   email: string;
@@ -15,8 +9,8 @@ export interface GoogleUser extends User {
 }
 
 export interface Subscription {
-  user: User;
-  channel: Channel;
+  userId: string;
+  channelId: string;
 }
 
 /**
