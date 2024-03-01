@@ -41,7 +41,7 @@ export class YoutubeApiService {
         const { actualStartTime, scheduledStartTime } = streamingDetails;
         const startAt = actualStartTime || scheduledStartTime;
 
-        return startAt ? { ...s, startAt } : s;
+        return startAt ? { ...s, startAt: new Date(startAt) } : s;
       });
 
       return streamWithStartAtTime;
