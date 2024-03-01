@@ -18,8 +18,8 @@ export interface Subscription {
  */
 
 export interface UserRepository {
-  findByUuid(uuid: string): Promise<User>;
-  findByEmail(email: string): Promise<User>;
+  findByUuid(uuid: string): Promise<User | null>;
+  findByEmail(email: string): Promise<User | null>;
   update(user: User): Promise<void>;
   save(user: User): Promise<void>;
 }

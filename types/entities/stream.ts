@@ -7,7 +7,7 @@ export default interface Stream {
   channelId: string;
   title?: string;
   description?: string;
-  startAt?: string; // ほんとか？
+  startAt?: Date;
 }
 
 /**
@@ -15,8 +15,8 @@ export default interface Stream {
  */
 
 export interface StreamRepository {
-  findByVideoId(videoId: string): Promise<Stream>;
-  findByChannelId(channelId: string): Promise<Stream>;
+  findByVideoId(videoId: string): Promise<Stream | null>;
+  findByChannelId(channelId: string): Promise<Stream | null>;
   save(stream: Stream): Promise<void>;
   update(stream: Stream): Promise<void>;
 }

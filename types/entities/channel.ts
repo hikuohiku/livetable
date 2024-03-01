@@ -13,7 +13,7 @@ export default interface Channel {
  */
 
 export interface ChannelRepository {
-  findByChannelId(channelId: string): Promise<Channel>;
+  findByChannelId(channelId: string): Promise<Channel | null>;
   save(channel: Channel): Promise<void>;
   update(channel: Channel): Promise<void>;
 }
