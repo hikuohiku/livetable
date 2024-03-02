@@ -16,11 +16,13 @@
     "@mui/material": "^5.15.10",
     "@prisma/client": "^5.9.1",
     "@types/uuid": "^9.0.8",
+    "googleapis": "^133.0.0",
     "next": "14.1.0",
     "next-auth": "^4.24.6",
     "prettier": "^3.2.5",
     "react": "^18",
     "react-dom": "^18",
+    "rss-parser": "^3.13.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {

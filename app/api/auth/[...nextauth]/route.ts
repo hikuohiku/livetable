@@ -1,6 +1,6 @@
 import NextAuth from 'next-auth/next';
 import GoogleProvider from 'next-auth/providers/google';
-import prisma from '@/services/prismaClient';
+import prisma from '@/lib/prismaClient';
 
 const clientId = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
@@ -20,7 +20,8 @@ const handler = NextAuth({
       clientSecret: clientSecret,
       authorization: {
         params: {
-          access_type: 'offline',
+          // access_type: 'offline',
+          scope: 'openid email profile https://www.googleapis.com/auth/youtube.readonly',
         },
       },
     }),
@@ -43,6 +44,7 @@ const handler = NextAuth({
 
         const refreshToken = account.refresh_token as string;
         const accessToken = account.access_token;
+        // console.log('accessToken', accessToken);
 
         if (!accessToken) {
           throw new Error('accessToken is required');
