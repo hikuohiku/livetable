@@ -1,6 +1,7 @@
 import NextAuth from 'next-auth/next';
 import GoogleProvider from 'next-auth/providers/google';
-import prisma from '@/lib/prismaClient';
+import userRepository from '@/services/repositories/userRepository';
+import { googleUserRepository } from '@/services/repositories/userRepository';
 
 const clientId = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
@@ -29,45 +30,24 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, account, profile }) {
       // サインインのときだけ発火
-      if (account && account.provider === 'google' && profile) {
-        if (!(profile.email && profile.name)) {
-          throw new Error('email and name are required');
-        }
-
+      // profileはサインイン時のみ存在する
+      if (account && account.provider === 'google' && account.access_token && profile && profile.email) {
+        // ユーザー情報をDBに保存
+        // usersテーブル
         const email = profile.email;
         const name = profile.name;
-        const user = await prisma.user.upsert({
-          where: { email },
-          update: { name },
-          create: { email, name },
+
+        const user = await userRepository.upsertByEmail(email, name);
+
+        // google_usersテーブル
+        const accessToken = account.access_token;
+
+        await googleUserRepository.upsert({
+          ...user,
+          token: accessToken,
         });
 
-        const refreshToken = account.refresh_token as string;
-        const accessToken = account.access_token;
-        // console.log('accessToken', accessToken);
-
-        if (!accessToken) {
-          throw new Error('accessToken is required');
-        }
-
-        const userId = user.uuid;
-
-        try {
-          await prisma.googleUser.upsert({
-            where: { userId },
-            update: refreshToken ? { accessToken, refreshToken } : { accessToken },
-            create: {
-              userId,
-              refreshToken,
-              accessToken,
-            },
-          });
-        } catch (e) {
-          console.error(e);
-          // TODO: ここにサインアップ時にリフレッシュトークンが帰ってこなかったときのエラー処理を書く
-          // ユーザー側のOAuthの登録を解除とかしないといけない気がする．
-        }
-
+        // JWTにユーザーidを追加
         token = {
           ...token,
           uuid: user.uuid,
@@ -75,7 +55,8 @@ const handler = NextAuth({
         return token;
       }
 
-      return token;
+      // TODO: エラーハンドリング
+      throw new Error('jwt callback error');
     },
   },
 });
