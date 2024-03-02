@@ -6,15 +6,6 @@ import Typography from '@mui/material/Typography';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 
-/* 確認用
-import youtubeRssService from '@/services/youtubeRssService';
-
-youtubeRssService.getStreams({ channelId: 'UCt30jJgChL8qeT9VPadidSw' }).then((streams) => {
-  console.log(streams);
-}
-);
-*/
-
 export default function Page() {
   return (
     <AppBar>

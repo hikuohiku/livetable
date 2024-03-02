@@ -1,5 +1,5 @@
-import Channel from "@/types/channel";
-import Stream from "@/types/stream";
+import Channel from "@/types/entities/channel";
+import Stream from "@/types/entities/stream";
 
 import Parser from "rss-parser";
 
