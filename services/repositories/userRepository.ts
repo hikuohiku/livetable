@@ -9,9 +9,9 @@ export class PrismaUserRepository implements UserRepository {
     const user = await prisma.user.findUnique({ where: { uuid } });
     return user
       ? {
-        ...user,
-        name: user.name ?? undefined,
-      }
+          ...user,
+          name: user.name ?? undefined,
+        }
       : null;
   }
 
@@ -19,9 +19,9 @@ export class PrismaUserRepository implements UserRepository {
     const user = await prisma.user.findUnique({ where: { email } });
     return user
       ? {
-        ...user,
-        name: user.name ?? undefined,
-      }
+          ...user,
+          name: user.name ?? undefined,
+        }
       : null;
   }
 
@@ -49,15 +49,29 @@ export class PrismaUserRepository implements UserRepository {
 
 export class PrismaGoogleUserRepository extends PrismaUserRepository implements GoogleUserRepository {
   async update(user: GoogleUser) {
-    await prisma.user.update({ where: { uuid: user.uuid }, data: user });
+    await prisma.googleUser.update({
+      where: { userId: user.uuid },
+      data: {
+        accessToken: user.token,
+      },
+    });
   }
 
   async save(user: GoogleUser) {
-    await prisma.user.create({ data: user });
+    await prisma.googleUser.create({
+      data: {
+        userId: user.uuid,
+        accessToken: user.token,
+      },
+    });
   }
 
   async upsert(user: GoogleUser) {
-    await prisma.user.upsert({ where: { uuid: user.uuid }, update: user, create: user });
+    await prisma.googleUser.upsert({
+      where: { userId: user.uuid },
+      update: { accessToken: user.token },
+      create: { userId: user.uuid, accessToken: user.token },
+    });
   }
 }
 
