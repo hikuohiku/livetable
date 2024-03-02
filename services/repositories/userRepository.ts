@@ -1,24 +1,28 @@
-import { UserRepository, GoogleUserRepository, SubscriptionRepository } from "@/types/entities/user";
-import User, { GoogleUser } from "@/types/entities/user";
-import { Subscription } from "@prisma/client";
+import { UserRepository, GoogleUserRepository, SubscriptionRepository } from '@/types/entities/user';
+import User, { GoogleUser } from '@/types/entities/user';
+import { Subscription } from '@prisma/client';
 
-import prisma from "@/lib/prismaClient";
+import prisma from '@/lib/prismaClient';
 
 export class PrismaUserRepository implements UserRepository {
   async findByUuid(uuid: string) {
     const user = await prisma.user.findUnique({ where: { uuid } });
-    return user ? {
-      ...user,
-      name: user.name ?? undefined,
-    } : null;
+    return user
+      ? {
+        ...user,
+        name: user.name ?? undefined,
+      }
+      : null;
   }
 
   async findByEmail(email: string) {
     const user = await prisma.user.findUnique({ where: { email } });
-    return user ? {
-      ...user,
-      name: user.name ?? undefined,
-    } : null;
+    return user
+      ? {
+        ...user,
+        name: user.name ?? undefined,
+      }
+      : null;
   }
 
   async update(user: User) {
@@ -27,6 +31,19 @@ export class PrismaUserRepository implements UserRepository {
 
   async save(user: User) {
     await prisma.user.create({ data: user });
+  }
+
+  async upsert(user: User) {
+    await prisma.user.upsert({ where: { uuid: user.uuid }, update: user, create: user });
+  }
+
+  async upsertByEmail(email: string, name?: string) {
+    const user = await prisma.user.upsert({ where: { email }, update: { name }, create: { email, name } });
+    const result: User = {
+      ...user,
+      name: user.name ?? undefined,
+    };
+    return result;
   }
 }
 
@@ -37,6 +54,10 @@ export class PrismaGoogleUserRepository extends PrismaUserRepository implements 
 
   async save(user: GoogleUser) {
     await prisma.user.create({ data: user });
+  }
+
+  async upsert(user: GoogleUser) {
+    await prisma.user.upsert({ where: { uuid: user.uuid }, update: user, create: user });
   }
 }
 
@@ -51,7 +72,17 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
   }
 
   async delete(subscription: Subscription) {
-    await prisma.subscription.delete({ where: { userId_channelId: { userId: subscription.userId, channelId: subscription.channelId } } });
+    await prisma.subscription.delete({
+      where: { userId_channelId: { userId: subscription.userId, channelId: subscription.channelId } },
+    });
+  }
+
+  async upsert(subscription: Subscription) {
+    await prisma.subscription.upsert({
+      where: { userId_channelId: { userId: subscription.userId, channelId: subscription.channelId } },
+      update: subscription,
+      create: subscription,
+    });
   }
 }
 
