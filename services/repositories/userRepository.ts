@@ -1,6 +1,6 @@
 import { UserRepository, GoogleUserRepository, SubscriptionRepository } from '@/types/entities/user';
 import User, { GoogleUser } from '@/types/entities/user';
-import { Subscription } from '@prisma/client';
+import { Subscription } from '@/types/entities/user';
 
 import prisma from '@/lib/prismaClient';
 
