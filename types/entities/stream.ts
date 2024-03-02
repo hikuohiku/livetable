@@ -19,4 +19,5 @@ export interface StreamRepository {
   findByChannelId(channelId: string): Promise<Stream | null>;
   save(stream: Stream): Promise<void>;
   update(stream: Stream): Promise<void>;
+  upsert(stream: Stream): Promise<void>;
 }
