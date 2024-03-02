@@ -16,8 +16,8 @@ youtubeRssService.getStreams({ channelId: 'UCt30jJgChL8qeT9VPadidSw' }).then((st
 */
 
 /* 確認用
-import { getStartAtTime } from '@/services/youtubeApiService';
-import Stream from '@/types/stream';
+import youtubeApiService from '@/services/youtubeApiService';
+import Stream from '@/types/entities/stream';
 
 const streams: Stream[] = [
   {
@@ -30,35 +30,35 @@ const streams: Stream[] = [
   },
 ];
 
-getStartAtTime(streams).then((streams) => {
+youtubeApiService.getStartAtTime(streams).then((streams) => {
   console.log(streams);
 });
 */
 
 /* 確認用
-import { getSubscription } from '@/services/youtubeApiService';
-import { GoogleUser } from '@/types/user';
+import youtubeApiService from '@/services/youtubeApiService';
+import { GoogleUser } from '@/types/entities/user';
 
 const user: GoogleUser = {
   uuid: '1',
   email: '1',
-  token: 'ya29.a0AfB_byBMBWacOsdbA7OLFFfaTgRt7jYww8MGl7ez659sqKu4yG0VgvW2_s-y4cDLR5t3_mb_sB84yx5sTjReXX0Kv8jjdV6rOSJc__F1LitFSQPkxNJ5zPMx6-tuXMR-f4C_DW7ic6jP50tfmnCBa_vIylCDs_eP3iKEaCgYKAcMSARMSFQHGX2MiKwv9KQrlJGgcgtJQUd9_0g0171',
+  token: 'ya29.a0AfB_byDXvXIQT2VdyMYtBd5Luf9n0sGaQTEfljNu2GO5bYk0icC1A1djxUvd5kIhav5flnlOU0MJHEo13oNxpuYdAbB_F9bp7Hfc-BBGP-dMpJRm1N_kmaMJQEmQyHzmJ4drSbyHWlxr5Lm-N3TLf-IoGMcDJmROzVpnaCgYKAcMSARMSFQHGX2MiJwtAblXIf7f5574vT1pScQ0171',
 };
 
-getSubscription(user).then((subscription) => {
-  console.log(subscription);
+youtubeApiService.getSubscription(user).then((subscriptions) => {
+  console.log(subscriptions);
 });
 */
 
 /* 確認用
-import { getChannel } from '@/services/youtubeApiService';
-import Channel from '@/types/channel';
+import youtubeApiService from '@/services/youtubeApiService';
+import Channel from '@/types/entities/channel';
 
 const channel: Channel = {
   channelId: 'UCIBY1ollUsauvVi4hW4cumw',
 };
 
-getChannel([channel]).then((channel) => {
+youtubeApiService.getChannel([channel]).then((channel) => {
   console.log(channel);
 });
 */
