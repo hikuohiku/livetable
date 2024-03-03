@@ -47,7 +47,7 @@ model Stream {
   channel     Channel  @relation(fields: [channelId], references: [channelId])
   channelId   String   @map("channel_id")
   title       String?
-  description String?
+  description String?  @db.LongText
   startAt     DateTime @map("start_at")
 
   schedules UserSchedule[]
