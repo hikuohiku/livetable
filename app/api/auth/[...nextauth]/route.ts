@@ -6,7 +6,9 @@ import { subscriptionRepository } from '@/services/repositories/userRepository';
 import youtubeApiService from '@/services/youtubeApiService';
 import { GoogleUser } from '@/types/entities/user';
 import channelRepository from '@/services/repositories/channelRepository';
+import streamRepository from '@/services/repositories/streamRepository';
 import Channel from '@/types/entities/channel';
+import Stream from '@/types/entities/stream';
 import youtubeRssService from '@/services/youtubeRssService';
 
 const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -81,10 +83,13 @@ const handler = NextAuth({
           return { channelId: subscription.channelId };
         });
         // 取得するチャンネルの配信情報を取得
-        const streams: Channel[][] = await Promise.all(
+        const streamGroups: Stream[][] = await Promise.all(
           channelsWithIdOnly.map((channel) => youtubeRssService.getStreams(channel)),
         );
-        console.dir(streams, { depth: null });
+        // 配信情報をDBに保存
+        await Promise.all(
+          streamGroups.map((streams) => Promise.all(streams.map((stream) => streamRepository.upsert(stream)))),
+        );
 
         // JWTにユーザーidを追加
         token = {
