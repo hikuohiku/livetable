@@ -1,12 +1,12 @@
-import Channel from "@/types/entities/channel";
-import Stream from "@/types/entities/stream";
+import Channel from '@/types/entities/channel';
+import Stream from '@/types/entities/stream';
 
-import Parser from "rss-parser";
+import Parser from 'rss-parser';
 
-const youtubeRssUrl = "https://www.youtube.com/feeds/videos.xml?channel_id=";
+const youtubeRssUrl = 'https://www.youtube.com/feeds/videos.xml?channel_id=';
 
 type CustomField = {
-  "yt:videoId": string;
+  'yt:videoId': string;
 };
 
 export class YoutubeRssService {
@@ -18,9 +18,9 @@ export class YoutubeRssService {
       // rss-parserのデフォルトで定義されないフィールドを定義する
       customFields: {
         item: [
-          ["yt:videoId", "videoId"],
+          ['yt:videoId', 'videoId'],
           // media:descriptionを直接取得する方法がわからなかったので親要素を取得してたどる
-          ["media:group", "media:group", { keepArray: true }],
+          ['media:group', 'media:group', { keepArray: true }],
         ],
       },
     });
@@ -33,24 +33,25 @@ export class YoutubeRssService {
     } catch (error) {
       // TODO: この辺勉強してちゃんと書く
       console.error(error);
-      throw new Error("Failed to get feed");
+      throw new Error('Failed to get feed');
     }
   }
 
   async getStreams(channel: Channel): Promise<Stream[]> {
     const feed = await this.getFeed(channel);
     const streams = feed.items.map((item) => {
+      const descriptionArray = (item['media:group']?.[0]?.['media:description'] as String[]) ?? '';
+      const description = descriptionArray.join('');
       const stream: Stream = {
         videoId: item.videoId,
         channelId: channel.channelId,
         title: item.title,
-        description: item["media:group"]?.[0]?.["media:description"] ?? "",
+        description: description,
       };
       return stream;
     });
     return streams;
   }
-
 }
 
 const youtubeRssService = new YoutubeRssService();
