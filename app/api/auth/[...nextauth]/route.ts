@@ -7,6 +7,7 @@ import youtubeApiService from '@/services/youtubeApiService';
 import { GoogleUser } from '@/types/entities/user';
 import channelRepository from '@/services/repositories/channelRepository';
 import Channel from '@/types/entities/channel';
+import youtubeRssService from '@/services/youtubeRssService';
 
 const clientId = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
@@ -67,11 +68,23 @@ const handler = NextAuth({
             return null;
           }),
         ).then((results) => results.filter((result): result is Channel => result !== null));
-        console.log('unSavedChannels: ' + unSavedChannels);
-        const unSavedChannelsWithInfo = await youtubeApiService.getChannel(unSavedChannels);
-        await Promise.all(unSavedChannelsWithInfo.map((channel) => channelRepository.save(channel)));
+        if (unSavedChannels.length !== 0) {
+          const unSavedChannelsWithInfo = await youtubeApiService.getChannel(unSavedChannels);
+          await Promise.all(unSavedChannelsWithInfo.map((channel) => channelRepository.save(channel)));
+        }
         // チャンネル登録情報をDBに保存
         await Promise.all(subscriptions.map((subscription) => subscriptionRepository.upsert(subscription)));
+
+        // 配信情報を取得
+        // 取得するチャンネル
+        const channelsWithIdOnly: Channel[] = subscriptions.map((subscription) => {
+          return { channelId: subscription.channelId };
+        });
+        // 取得するチャンネルの配信情報を取得
+        const streams: Channel[][] = await Promise.all(
+          channelsWithIdOnly.map((channel) => youtubeRssService.getStreams(channel)),
+        );
+        console.dir(streams, { depth: null });
 
         // JWTにユーザーidを追加
         token = {
