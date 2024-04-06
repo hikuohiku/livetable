@@ -54,6 +54,51 @@ export class YoutubeApiService {
     }
   }
 
+  async getLiveStatus(video: Video): Promise<Video> {
+    try {
+      // APIにリクエストを送信
+      const responseData = await this.youtubeApiService.videos
+        .list({
+          key: this.apiKey,
+          part: ['liveStreamingDetails'],
+          fields: 'items(id,liveStreamingDetails(actualStartTime,actualEndTime,scheduledStartTime))',
+          id: [video.videoId],
+        })
+        .then((response) => response.data);
+
+      // レスポンスのバリデーション
+      if (!responseData.items) {
+        throw new Error('Invalid response data from YouTube API');
+      }
+      const responseItems = responseData.items;
+
+      // startAt, endAt, liveStatusを取得
+      const item = responseItems[0];
+      if (!item || !item.liveStreamingDetails) {
+        return { ...video, liveStatus: 'none' };
+      }
+
+      const streamingDetails = item.liveStreamingDetails;
+      const { actualStartTime, actualEndTime, scheduledStartTime } = streamingDetails;
+      const startAt = actualStartTime || scheduledStartTime;
+      const endAt = actualEndTime;
+
+      // liveStatusを推定するロジック
+      const liveStatus = actualEndTime ? 'completed' : actualStartTime ? 'live' : 'upcoming';
+
+      return {
+        ...video,
+        startAt: startAt ? new Date(startAt) : undefined,
+        endAt: endAt ? new Date(endAt) : undefined,
+        liveStatus,
+      };
+    } catch (e) {
+      //TODO: エラー処理
+      console.error(e);
+      throw new Error('Failed to fetch data from YouTube API');
+    }
+  }
+
   async getSubscription(user: GoogleUser): Promise<Subscription[]> {
     try {
       const responseData = await this.youtubeApiService.subscriptions

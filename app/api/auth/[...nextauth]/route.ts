@@ -83,15 +83,30 @@ const handler = NextAuth({
           return { channelId: subscription.channelId };
         });
         // 取得するチャンネルの配信情報を取得
-        const streamGroups: Video[][] = await Promise.all(
+        const videoGroups: Video[][] = await Promise.all(
           channelsWithIdOnly.map((channel) => youtubeRssService.getStreams(channel)),
         );
-        console.dir(streamGroups, { depth: null });
-        // const streams = streamGroups.flat();
-        // // 開始時刻を取得
-        // const streamsWithStartAtTime = await youtubeApiService.getStartAtTime(streams);
-        // // 配信情報をDBに保存
-        // await Promise.all(streamsWithStartAtTime.map((stream) => streamRepository.upsert(stream)));
+        const videos = videoGroups.flat();
+
+        // 配信情報をDBと照合
+        // DBに存在しないか，DB上でliveStatusが"live"か"upcoming"のものをまとめる
+        const refreshRequiredVideos: Video[] = await Promise.all(
+          videos.map(async (video) => {
+            const savedVideo = await videoRepository.findByVideoId(video.videoId);
+            if (!savedVideo || savedVideo.liveStatus === 'live' || savedVideo.liveStatus === 'upcoming') {
+              return video;
+            }
+            return null;
+          }),
+        ).then((results) => results.filter((result): result is Video => result !== null));
+
+        // 更新が必要な配信の配信ステータスを取得
+        const videosWithLiveStatus = await Promise.all(
+          refreshRequiredVideos.map((video) => youtubeApiService.getLiveStatus(video)),
+        );
+        console.log(videosWithLiveStatus);
+        // 配信情報をDBに保存
+        await Promise.all(videosWithLiveStatus.map((video) => videoRepository.upsert(video)));
 
         // JWTにユーザーidを追加
         token = {
