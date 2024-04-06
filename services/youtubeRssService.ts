@@ -1,5 +1,5 @@
 import Channel from '@/types/entities/channel';
-import Stream from '@/types/entities/stream';
+import Video from '@/types/entities/video';
 
 import Parser from 'rss-parser';
 
@@ -37,12 +37,12 @@ export class YoutubeRssService {
     }
   }
 
-  async getStreams(channel: Channel): Promise<Stream[]> {
+  async getStreams(channel: Channel): Promise<Video[]> {
     const feed = await this.getFeed(channel);
     const streams = feed.items.map((item) => {
       const descriptionArray = (item['media:group']?.[0]?.['media:description'] as String[]) ?? '';
       const description = descriptionArray.join('');
-      const stream: Stream = {
+      const stream: Video = {
         videoId: item.videoId,
         channelId: channel.channelId,
         title: item.title,
@@ -50,7 +50,7 @@ export class YoutubeRssService {
       };
       return stream;
     });
-    return streams;
+    return streams.slice(0, 5);
   }
 }
 
