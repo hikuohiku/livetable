@@ -1,16 +1,16 @@
-import StreamInfoService from "@/types/services/streamInfoService";
-import ChannelInfoService from "@/types/services/channelInfoService";
-import youtubeRssService from "@/services/youtubeRssService";
-import youtubeApiService from "@/services/youtubeApiService";
-import Channel from "@/types/entities/channel";
-import Stream from "@/types/entities/stream";
+import VideoInfoService from '@/types/services/videoInfoService';
+import ChannelInfoService from '@/types/services/channelInfoService';
+import youtubeRssService from '@/services/youtubeRssService';
+import youtubeApiService from '@/services/youtubeApiService';
+import Channel from '@/types/entities/channel';
+import Video from '@/types/entities/video';
 
-export class YoutubeService implements StreamInfoService, ChannelInfoService {
-  async getStreams(channel: Channel): Promise<Stream[]> {
+export class YoutubeService implements VideoInfoService, ChannelInfoService {
+  async getStreams(channel: Channel): Promise<Video[]> {
     return await youtubeRssService.getStreams(channel);
   }
 
-  async getStartAtTime(streams: Stream[]): Promise<Stream[]> {
+  async getStartAtTime(streams: Video[]): Promise<Video[]> {
     return await youtubeApiService.getStartAtTime(streams);
   }
 
