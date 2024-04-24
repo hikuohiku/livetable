@@ -1,31 +1,111 @@
 import * as React from 'react';
-import { AppBar } from '@mui/material';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import MenuIcon from '@mui/icons-material/Menu';
-import AccountCircle from '@mui/icons-material/AccountCircle';
+import LiveCard from '../components/LiveCard';
+import Header from '../components/Header';
+import Splitter from '@/components/Splitter';
+import CardContainer from '@/components/CardContainer';
 
 export default function Page() {
   return (
-    <AppBar>
-      <Toolbar>
-        <IconButton edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }}>
-          <MenuIcon />
-        </IconButton>
-        <Typography variant="h5" noWrap component="div" sx={{ flexGrow: 1 }}>
-          livetable
-        </Typography>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="menu-appbar"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-      </Toolbar>
-    </AppBar>
+    <>
+      <Header />
+      <div className='relative flex flex-wrap justify-end top-16 mx-4'>
+        <CardContainer>
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <Splitter time={new Date()} />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <Splitter time={new Date()} />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />{' '}
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+          <LiveCard
+            channelThumbnail='https://yt3.googleusercontent.com/WO7ItKNmy6tW_NQ82g8c1y74CZSw6GsSdynsE5s2csuEok2fHRrAaGcBV3JJO-2BxEOXXA8lvw=s176-c-k-c0x00ffffff-no-rj'
+            liveThumbnail='https://i2.ytimg.com/vi/11CorwQBbuA/hqdefault.jpg'
+          />
+        </CardContainer>
+      </div>
+    </>
   );
 }
