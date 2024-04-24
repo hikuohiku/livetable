@@ -1,12 +1,18 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next';
+import type { Viewport } from 'next/types';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import Background from '../components/Background';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "livetable",
-  description: "timetable for Youtube live",
+  title: 'livetable',
+  description: 'timetable for Youtube live',
+};
+
+export const viewport: Viewport = {
+  themeColor: '#ffeded',
 };
 
 export default function RootLayout({
@@ -15,8 +21,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja">
-      <body className={inter.className}>{children}</body>
+    <html lang='ja'>
+      <body className={inter.className}>
+        <Background />
+        {children}
+      </body>
     </html>
   );
 }
