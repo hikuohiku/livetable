@@ -16,18 +16,42 @@
   }
 }
 
+html {
+  padding-top: constant(safe-area-inset-top);
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-left: constant(safe-area-inset-left);
+  padding-right: constant(safe-area-inset-right);
+}
+
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background: transparent;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  .border-glass {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+}
+
+@layer components {
+  .liveCard {
+    /* From https://css.glass */
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  .splitter {
+    height: 1px;
+    border-width: 0;
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+  .bgstyle {
+    transform: translate3d(0, 0, -1px);
   }
 }
