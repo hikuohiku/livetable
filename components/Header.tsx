@@ -1,5 +1,5 @@
-import { varelaRound } from '../utils/font';
-import UserIcon from './UserIcon';
+import { varelaRound } from '@/utils/font';
+import UserIcon from '@/components/UserIcon';
 
 function Header() {
   return (

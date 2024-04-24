@@ -1,6 +1,3 @@
-import backgroundImage from '@/public/layered-waves-haikei.svg';
-import Image from 'next/image';
-
 function Background() {
   return (
     <div

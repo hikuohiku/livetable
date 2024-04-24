@@ -1,4 +1,4 @@
-import TimeTip from './TimeTip';
+import TimeTip from '@/components/TimeTip';
 
 interface SplitterProps {
   time: Date;

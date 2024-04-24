@@ -1,6 +1,6 @@
 import * as React from 'react';
-import LiveCard from '../components/LiveCard';
-import Header from '../components/Header';
+import Header from '@/components/Header';
+import LiveCard from '@/components/LiveCard';
 import Splitter from '@/components/Splitter';
 import CardContainer from '@/components/CardContainer';
 
