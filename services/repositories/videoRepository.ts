@@ -13,14 +13,12 @@ export class PrismaVideoRepository implements VideoRepository {
       : null;
   }
 
-  async findByChannelId(channelId: string): Promise<Video | null> {
-    const video = await prisma.video.findFirst({ where: { channelId } });
-    return video
-      ? {
-          ...video,
-          liveStatus: isLiveStatus(video.liveStatus) ? video.liveStatus : undefined,
-        }
-      : null;
+  async findByChannelId(channelId: string): Promise<Video[]> {
+    const videos = await prisma.video.findMany({ where: { channelId } });
+    return videos.map((video) => ({
+      ...video,
+      liveStatus: isLiveStatus(video.liveStatus) ? video.liveStatus : undefined,
+    }));
   }
 
   async save(video: Video): Promise<Video> {
