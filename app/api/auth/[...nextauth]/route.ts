@@ -6,6 +6,7 @@ import youtubeRssService from '@/services/youtubeRssService';
 import Channel from '@/types/entities/channel';
 import { GoogleUser, Subscription } from '@/types/entities/user';
 import Video from '@/types/entities/video';
+import { NextAuthOptions } from 'next-auth';
 import NextAuth from 'next-auth/next';
 import GoogleProvider from 'next-auth/providers/google';
 
@@ -19,8 +20,7 @@ if (!clientSecret) {
   throw new Error('GOOGLE_CLIENT_SECRET is not set');
 }
 
-// NextAuthの設定
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
   secret: process.env.AUTH_SECRET,
   providers: [
     GoogleProvider({
@@ -89,7 +89,10 @@ const handler = NextAuth({
       return token;
     },
   },
-});
+};
+
+// NextAuthの設定
+const handler = NextAuth(authOptions);
 
 /**
  * ユーザー情報をDBに保存する関数
