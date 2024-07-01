@@ -47,6 +47,7 @@ export class YoutubeRssService {
         channelId: channel.channelId,
         title: item.title,
         description: description,
+        thumbnail: item['media:group']?.[0]?.['media:thumbnail']?.[0]?.$.url,
       };
       return stream;
     });

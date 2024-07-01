@@ -1,16 +1,13 @@
+import channelRepository from '@/services/repositories/channelRepository';
+import userRepository, { googleUserRepository, subscriptionRepository } from '@/services/repositories/userRepository';
+import videoRepository from '@/services/repositories/videoRepository';
+import youtubeApiService from '@/services/youtubeApiService';
+import youtubeRssService from '@/services/youtubeRssService';
+import Channel from '@/types/entities/channel';
+import { GoogleUser, Subscription } from '@/types/entities/user';
+import Video from '@/types/entities/video';
 import NextAuth from 'next-auth/next';
 import GoogleProvider from 'next-auth/providers/google';
-import userRepository from '@/services/repositories/userRepository';
-import { googleUserRepository } from '@/services/repositories/userRepository';
-import { subscriptionRepository } from '@/services/repositories/userRepository';
-import youtubeApiService from '@/services/youtubeApiService';
-import { GoogleUser } from '@/types/entities/user';
-import { Subscription } from '@/types/entities/user';
-import channelRepository from '@/services/repositories/channelRepository';
-import videoRepository from '@/services/repositories/videoRepository';
-import Channel from '@/types/entities/channel';
-import Video from '@/types/entities/video';
-import youtubeRssService from '@/services/youtubeRssService';
 
 const clientId = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
@@ -46,7 +43,7 @@ const handler = NextAuth({
       if (!(account && account.provider === 'google' && account.access_token && profile && profile.email)) return token;
 
       // ユーザー情報をDBに保存（DBと同期しておく）
-      const user = await storeUserInfo(profile.email, account.access_token, profile.name);
+      const user = await storeUserInfo(profile.email, account.access_token, profile.name, token.picture ?? undefined);
 
       // チャンネル登録情報を取得
       const subscriptions = await youtubeApiService.getSubscription(user);
@@ -81,7 +78,6 @@ const handler = NextAuth({
       const videosWithLiveStatus = await Promise.all(
         refreshRequiredVideos.map((video) => youtubeApiService.getLiveStatus(video)),
       );
-      console.log(videosWithLiveStatus);
       // 配信情報をDBに保存
       await Promise.all(videosWithLiveStatus.map((video) => videoRepository.upsert(video)));
 
@@ -91,9 +87,6 @@ const handler = NextAuth({
         uuid: user.uuid,
       };
       return token;
-
-      // TODO: エラーハンドリング
-      throw new Error('jwt callback error');
     },
   },
 });
@@ -102,22 +95,29 @@ const handler = NextAuth({
  * ユーザー情報をDBに保存する関数
  * TODO: トランザクション
  */
-async function storeUserInfo(email: string, accessToken: string, name?: string): Promise<GoogleUser> {
+async function storeUserInfo(
+  email: string,
+  accessToken?: string,
+  name?: string,
+  thumbnail?: string,
+): Promise<GoogleUser> {
   // usersテーブル
   const user = await userRepository.upsertByEmail(email, name);
 
   // google_usersテーブル
   await googleUserRepository.upsert({
     ...user,
-    token: accessToken,
+    accessToken,
+    thumbnail,
   });
 
-  return { ...user, token: accessToken };
+  return { ...user, accessToken, thumbnail };
 }
 
 /**
  * チャンネル登録情報をDBに保存する関数
  * 登録チャンネルがDBに存在しない場合はYoutubeAPIから情報を取ってきて保存
+ * TODO: チャンネル情報の更新処理
  */
 async function storeSubscriptionInfo(subscriptions: Subscription[]): Promise<void> {
   // DBと照合して未保存のチャンネルを取得

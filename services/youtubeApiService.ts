@@ -139,7 +139,7 @@ export class YoutubeApiService {
           key: this.apiKey,
           part: ['snippet', 'id'],
           id: channels.map((c) => c.channelId),
-          fields: 'items(snippet(title),id)',
+          fields: 'items(snippet(title,thumbnails.default.url),id)',
         })
         .then((response) => response.data);
 
@@ -158,7 +158,9 @@ export class YoutubeApiService {
         }
         const title = item.snippet.title;
 
-        return { channelId: c.channelId, channelName: title };
+        const thumbnail = item.snippet.thumbnails?.default?.url ?? undefined;
+
+        return { channelId: c.channelId, channelName: title, thumbnail: thumbnail };
       });
 
       return channelsWithTitle;
