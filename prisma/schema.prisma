@@ -26,7 +26,8 @@ model GoogleUser {
   user         User    @relation(fields: [userId], references: [uuid])
   userId       String  @id @map("user_id")
   refreshToken String? @map("refresh_token") @db.VarChar(512)
-  accessToken  String  @map("access_token") @db.VarChar(2048)
+  accessToken  String? @map("access_token") @db.VarChar(2048)
+  thumbnail    String? @map("thumbnail")
 
   @@map("google_users")
 }
@@ -35,6 +36,7 @@ model Channel {
   channelId   String  @id @map("channel_id")
   channelName String? @map("channel_name")
   handle      String?
+  thumbnail   String?
 
   streams       Video[]
   subscriptions Subscription[]
@@ -48,6 +50,7 @@ model Video {
   channelId   String    @map("channel_id")
   title       String?
   description String?   @db.Text
+  thumbnail   String?
   startAt     DateTime? @map("start_at")
   endAt       DateTime? @map("end_at")
   liveStatus  String?   @map("live_status") // "live" | "upcoming" | "completed" | "video"
