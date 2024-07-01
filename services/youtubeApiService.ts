@@ -1,9 +1,8 @@
-import Video from '@/types/entities/video';
-import { GoogleUser, Subscription } from '@/types/entities/user';
 import Channel from '@/types/entities/channel';
+import { GoogleUser, Subscription } from '@/types/entities/user';
+import Video from '@/types/entities/video';
 
-import { google } from 'googleapis';
-import { youtube_v3 } from 'googleapis';
+import { google, youtube_v3 } from 'googleapis';
 
 export class YoutubeApiService {
   private apiKey: string;
@@ -103,7 +102,7 @@ export class YoutubeApiService {
     try {
       const responseData = await this.youtubeApiService.subscriptions
         .list({
-          access_token: user.token,
+          access_token: user.accessToken ?? undefined,
           part: ['snippet'],
           fields: 'items(snippet(resourceId(channelId)))',
           mine: true,
@@ -140,7 +139,7 @@ export class YoutubeApiService {
           key: this.apiKey,
           part: ['snippet', 'id'],
           id: channels.map((c) => c.channelId),
-          fields: 'items(snippet(title),id)',
+          fields: 'items(snippet(title,thumbnails.default.url),id)',
         })
         .then((response) => response.data);
 
@@ -159,7 +158,9 @@ export class YoutubeApiService {
         }
         const title = item.snippet.title;
 
-        return { channelId: c.channelId, channelName: title };
+        const thumbnail = item.snippet.thumbnails?.default?.url ?? undefined;
+
+        return { channelId: c.channelId, channelName: title, thumbnail: thumbnail };
       });
 
       return channelsWithTitle;

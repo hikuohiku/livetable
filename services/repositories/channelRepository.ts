@@ -1,30 +1,22 @@
-import { ChannelRepository } from '@/types/entities/channel';
-import Channel from '@/types/entities/channel';
+import Channel, { ChannelRepository } from '@/types/entities/channel';
 
 import prisma from '@/lib/prismaClient';
 
 export class PrismaChannelRepository implements ChannelRepository {
-  async findByChannelId(channelId: string) {
-    const channel = await prisma.channel.findUnique({ where: { channelId } });
-    return channel
-      ? {
-          ...channel,
-          channelName: channel.channelName ?? undefined,
-          handle: channel.handle ?? undefined,
-        }
-      : null;
+  async findByChannelId(channelId: string): Promise<Channel | null> {
+    return prisma.channel.findUnique({ where: { channelId } });
   }
 
-  async save(channel: Channel) {
-    await prisma.channel.create({ data: channel });
+  async save(channel: Channel): Promise<Channel> {
+    return prisma.channel.create({ data: channel });
   }
 
-  async update(channel: Channel) {
-    await prisma.channel.update({ where: { channelId: channel.channelId }, data: channel });
+  async update(channel: Channel): Promise<Channel> {
+    return prisma.channel.update({ where: { channelId: channel.channelId }, data: channel });
   }
 
-  async upsert(channel: Channel) {
-    await prisma.channel.upsert({ where: { channelId: channel.channelId }, update: channel, create: channel });
+  async upsert(channel: Channel): Promise<Channel> {
+    return prisma.channel.upsert({ where: { channelId: channel.channelId }, update: channel, create: channel });
   }
 }
 

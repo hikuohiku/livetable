@@ -1,8 +1,7 @@
-import * as React from 'react';
+import CardContainer from '@/components/CardContainer';
 import Header from '@/components/Header';
 import LiveCard from '@/components/LiveCard';
 import Splitter from '@/components/Splitter';
-import CardContainer from '@/components/CardContainer';
 
 export default function Page() {
   return (

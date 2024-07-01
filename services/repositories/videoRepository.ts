@@ -1,73 +1,53 @@
-import Video from '@/types/entities/video';
-import { VideoRepository } from '@/types/entities/video';
+import Video, { VideoRepository, liveStatuses } from '@/types/entities/video';
 
 import prisma from '@/lib/prismaClient';
-import { check } from 'prettier';
 
 export class PrismaVideoRepository implements VideoRepository {
-  async findByVideoId(videoId: string) {
+  async findByVideoId(videoId: string): Promise<Video | null> {
     const video = await prisma.video.findUnique({ where: { videoId } });
     return video
       ? {
           ...video,
-          title: video.title ?? undefined,
-          description: video.description ?? undefined,
-          startAt: video.startAt ?? undefined,
-          endAt: video.endAt ?? undefined,
-          liveStatus: checkLiveStatusType(video.liveStatus) ? video.liveStatus : undefined,
+          liveStatus: isLiveStatus(video.liveStatus) ? video.liveStatus : undefined,
         }
       : null;
   }
 
-  async findByChannelId(channelId: string) {
+  async findByChannelId(channelId: string): Promise<Video | null> {
     const video = await prisma.video.findFirst({ where: { channelId } });
     return video
       ? {
           ...video,
-          title: video.title ?? undefined,
-          description: video.description ?? undefined,
-          startAt: video.startAt ?? undefined,
-          endAt: video.endAt ?? undefined,
-          liveStatus: checkLiveStatusType(video.liveStatus) ? video.liveStatus : undefined,
+          liveStatus: isLiveStatus(video.liveStatus) ? video.liveStatus : undefined,
         }
       : null;
   }
 
-  async save(video: Video) {
-    // const savedStream = {
-    //   ...stream,
-    //   // なんか，startAtがundefinedだとprismaに怒られる
-    //   startAt: stream.startAt ?? new Date(),
-    // };
-    // await prisma.stream.create({ data: savedStream });
-    await prisma.video.create({ data: video });
+  async save(video: Video): Promise<Video> {
+    const createdVideo = await prisma.video.create({ data: video });
+    return { ...createdVideo, liveStatus: isLiveStatus(createdVideo.liveStatus) ? createdVideo.liveStatus : undefined };
   }
 
-  async update(video: Video) {
-    await prisma.video.update({ where: { videoId: video.videoId }, data: video });
+  async update(video: Video): Promise<Video> {
+    const updatedVideo = await prisma.video.update({ where: { videoId: video.videoId }, data: video });
+    return { ...updatedVideo, liveStatus: isLiveStatus(updatedVideo.liveStatus) ? updatedVideo.liveStatus : undefined };
   }
 
-  async upsert(video: Video) {
-    // const upsertedStream = {
-    //   ...stream,
-    //   // なんか，startAtがundefinedだとprismaに怒られる2
-    //   startAt: stream.startAt ?? new Date(),
-    // };
-    // await prisma.stream.upsert({ where: { videoId: stream.videoId }, update: upsertedStream, create: upsertedStream });
-    await prisma.video.upsert({ where: { videoId: video.videoId }, update: video, create: video });
+  async upsert(video: Video): Promise<Video> {
+    const upsertedVideo = await prisma.video.upsert({
+      where: { videoId: video.videoId },
+      update: video,
+      create: video,
+    });
+    return {
+      ...upsertedVideo,
+      liveStatus: isLiveStatus(upsertedVideo.liveStatus) ? upsertedVideo.liveStatus : undefined,
+    };
   }
 }
 
-function checkLiveStatusType(
-  liveStatus: string | undefined | null,
-): liveStatus is 'live' | 'upcoming' | 'completed' | 'none' | undefined {
-  return (
-    liveStatus === 'live' ||
-    liveStatus === 'upcoming' ||
-    liveStatus === 'completed' ||
-    liveStatus === 'none' ||
-    liveStatus === undefined
-  );
+function isLiveStatus(liveStatus: string | undefined | null): liveStatus is Video['liveStatus'] {
+  return liveStatuses.includes(liveStatus as any) || liveStatus === null || liveStatus === undefined;
 }
 
 const videoRepository = new PrismaVideoRepository();
