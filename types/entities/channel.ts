@@ -4,9 +4,9 @@
 
 export default interface Channel {
   channelId: string;
-  channelName?: string;
-  handle?: string;
-  thumbnail?: string;
+  channelName?: string | null;
+  handle?: string | null;
+  thumbnail?: string | null;
 }
 
 /**
@@ -15,7 +15,7 @@ export default interface Channel {
 
 export interface ChannelRepository {
   findByChannelId(channelId: string): Promise<Channel | null>;
-  save(channel: Channel): Promise<void>;
-  update(channel: Channel): Promise<void>;
-  upsert(channel: Channel): Promise<void>;
+  save(channel: Channel): Promise<Channel>;
+  update(channel: Channel): Promise<Channel>;
+  upsert(channel: Channel): Promise<Channel>;
 }

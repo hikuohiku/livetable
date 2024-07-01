@@ -1,13 +1,13 @@
 export default interface User {
   uuid: string;
   email: string;
-  name?: string;
+  name?: string | null;
 }
 
 export interface GoogleUser extends User {
-  refreshToken?: string;
-  accessToken?: string;
-  thumbnail?: string;
+  refreshToken?: string | null;
+  accessToken?: string | null;
+  thumbnail?: string | null;
 }
 
 export interface Subscription {
@@ -22,21 +22,21 @@ export interface Subscription {
 export interface UserRepository {
   findByUuid(uuid: string): Promise<User | null>;
   findByEmail(email: string): Promise<User | null>;
-  update(user: User): Promise<void>;
-  save(user: User): Promise<void>;
-  upsert(user: User): Promise<void>;
+  update(user: User): Promise<User>;
+  save(user: User): Promise<User>;
+  upsert(user: User): Promise<User>;
   upsertByEmail(email: string, name?: string): Promise<User>;
 }
 
 export interface GoogleUserRepository extends UserRepository {
-  update(user: GoogleUser): Promise<void>;
-  save(user: GoogleUser): Promise<void>;
-  upsert(user: GoogleUser): Promise<void>;
+  update(user: GoogleUser): Promise<GoogleUser>;
+  save(user: GoogleUser): Promise<GoogleUser>;
+  upsert(user: GoogleUser): Promise<GoogleUser>;
 }
 
 export interface SubscriptionRepository {
   findByUser(user: User): Promise<Subscription[]>;
-  save(subscription: Subscription): Promise<void>;
-  upsert(subscription: Subscription): Promise<void>;
+  save(subscription: Subscription): Promise<Subscription>;
+  upsert(subscription: Subscription): Promise<Subscription>;
   delete(subscription: Subscription): Promise<void>;
 }
