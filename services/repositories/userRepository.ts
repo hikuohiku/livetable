@@ -1,11 +1,15 @@
-import { UserRepository, GoogleUserRepository, SubscriptionRepository } from '@/types/entities/user';
-import User, { GoogleUser } from '@/types/entities/user';
-import { Subscription } from '@/types/entities/user';
+import User, {
+  GoogleUser,
+  GoogleUserRepository,
+  Subscription,
+  SubscriptionRepository,
+  UserRepository,
+} from '@/types/entities/user';
 
 import prisma from '@/lib/prismaClient';
 
 export class PrismaUserRepository implements UserRepository {
-  async findByUuid(uuid: string) {
+  async findByUuid(uuid: string): Promise<User | null> {
     const user = await prisma.user.findUnique({ where: { uuid } });
     return user
       ? {
@@ -37,7 +41,7 @@ export class PrismaUserRepository implements UserRepository {
     await prisma.user.upsert({ where: { uuid: user.uuid }, update: user, create: user });
   }
 
-  async upsertByEmail(email: string, name?: string) {
+  async upsertByEmail(email: string, name?: string): Promise<User> {
     const user = await prisma.user.upsert({ where: { email }, update: { name }, create: { email, name } });
     const result: User = {
       ...user,
@@ -52,7 +56,9 @@ export class PrismaGoogleUserRepository extends PrismaUserRepository implements 
     await prisma.googleUser.update({
       where: { userId: user.uuid },
       data: {
-        accessToken: user.token,
+        refreshToken: user.refreshToken,
+        accessToken: user.accessToken,
+        thumbnail: user.thumbnail,
       },
     });
   }
@@ -61,7 +67,9 @@ export class PrismaGoogleUserRepository extends PrismaUserRepository implements 
     await prisma.googleUser.create({
       data: {
         userId: user.uuid,
-        accessToken: user.token,
+        refreshToken: user.refreshToken,
+        accessToken: user.accessToken,
+        thumbnail: user.thumbnail,
       },
     });
   }
@@ -69,14 +77,19 @@ export class PrismaGoogleUserRepository extends PrismaUserRepository implements 
   async upsert(user: GoogleUser) {
     await prisma.googleUser.upsert({
       where: { userId: user.uuid },
-      update: { accessToken: user.token },
-      create: { userId: user.uuid, accessToken: user.token },
+      update: { accessToken: user.accessToken, refreshToken: user.refreshToken, thumbnail: user.thumbnail },
+      create: {
+        userId: user.uuid,
+        accessToken: user.accessToken,
+        refreshToken: user.refreshToken,
+        thumbnail: user.thumbnail,
+      },
     });
   }
 }
 
 export class PrismaSubscriptionRepository implements SubscriptionRepository {
-  async findByUser(user: User) {
+  async findByUser(user: User): Promise<Subscription[]> {
     const subscriptions = await prisma.subscription.findMany({ where: { userId: user.uuid } });
     return subscriptions;
   }

@@ -5,7 +5,9 @@ export default interface User {
 }
 
 export interface GoogleUser extends User {
-  token: string;
+  refreshToken?: string;
+  accessToken?: string;
+  thumbnail?: string;
 }
 
 export interface Subscription {

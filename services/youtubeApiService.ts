@@ -1,9 +1,8 @@
-import Video from '@/types/entities/video';
-import { GoogleUser, Subscription } from '@/types/entities/user';
 import Channel from '@/types/entities/channel';
+import { GoogleUser, Subscription } from '@/types/entities/user';
+import Video from '@/types/entities/video';
 
-import { google } from 'googleapis';
-import { youtube_v3 } from 'googleapis';
+import { google, youtube_v3 } from 'googleapis';
 
 export class YoutubeApiService {
   private apiKey: string;
@@ -103,7 +102,7 @@ export class YoutubeApiService {
     try {
       const responseData = await this.youtubeApiService.subscriptions
         .list({
-          access_token: user.token,
+          access_token: user.accessToken,
           part: ['snippet'],
           fields: 'items(snippet(resourceId(channelId)))',
           mine: true,
