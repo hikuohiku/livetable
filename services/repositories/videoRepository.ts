@@ -1,17 +1,16 @@
-import Video from '@/types/entities/video';
-import { VideoRepository } from '@/types/entities/video';
+import Video, { VideoRepository } from '@/types/entities/video';
 
 import prisma from '@/lib/prismaClient';
-import { check } from 'prettier';
 
 export class PrismaVideoRepository implements VideoRepository {
-  async findByVideoId(videoId: string) {
+  async findByVideoId(videoId: string): Promise<Video | null> {
     const video = await prisma.video.findUnique({ where: { videoId } });
     return video
       ? {
           ...video,
           title: video.title ?? undefined,
           description: video.description ?? undefined,
+          thumbnail: video.thumbnail ?? undefined,
           startAt: video.startAt ?? undefined,
           endAt: video.endAt ?? undefined,
           liveStatus: checkLiveStatusType(video.liveStatus) ? video.liveStatus : undefined,
@@ -19,13 +18,14 @@ export class PrismaVideoRepository implements VideoRepository {
       : null;
   }
 
-  async findByChannelId(channelId: string) {
+  async findByChannelId(channelId: string): Promise<Video | null> {
     const video = await prisma.video.findFirst({ where: { channelId } });
     return video
       ? {
           ...video,
           title: video.title ?? undefined,
           description: video.description ?? undefined,
+          thumbnail: video.thumbnail ?? undefined,
           startAt: video.startAt ?? undefined,
           endAt: video.endAt ?? undefined,
           liveStatus: checkLiveStatusType(video.liveStatus) ? video.liveStatus : undefined,

@@ -7,6 +7,7 @@ export default interface Video {
   channelId: string;
   title?: string;
   description?: string;
+  thumbnail?: string;
   startAt?: Date;
   endAt?: Date;
   liveStatus?: 'live' | 'upcoming' | 'completed' | 'none';
