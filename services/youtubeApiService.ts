@@ -102,7 +102,7 @@ export class YoutubeApiService {
     try {
       const responseData = await this.youtubeApiService.subscriptions
         .list({
-          access_token: user.accessToken,
+          access_token: user.accessToken ?? undefined,
           part: ['snippet'],
           fields: 'items(snippet(resourceId(channelId)))',
           mine: true,
