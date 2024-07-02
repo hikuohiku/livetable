@@ -11,9 +11,14 @@ const nextConfig = {
         protocol: 'https',
         hostname: '*.ytimg.com',
         port: '',
-      }
-    ]
-  }
+      },
+      {
+        protocol: 'https',
+        hostname: '*.ggpht.com',
+        port: '',
+      },
+    ],
+  },
 };
 
 export default nextConfig;
