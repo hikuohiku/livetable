@@ -110,7 +110,7 @@ export class YoutubeApiService {
         })
         .then((response) => response.data);
 
-      console.dir(responseData, { depth: null });
+      // console.dir(responseData, { depth: null });
 
       // レスポンスのバリデーション
       if (!responseData.items) {
@@ -140,7 +140,7 @@ export class YoutubeApiService {
           })
           .then((response) => response.data);
 
-        console.dir(nextResponseData, { depth: null });
+        // console.dir(nextResponseData, { depth: null });
 
         if (!nextResponseData.items) {
           throw new Error('Invalid response data from YouTube API');

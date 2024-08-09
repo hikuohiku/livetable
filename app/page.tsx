@@ -1,6 +1,7 @@
 import CardContainer from '@/components/CardContainer';
 import Header from '@/components/Header';
 import LiveCard from '@/components/LiveCard';
+import Splitter from '@/components/Splitter';
 import channelRepository from '@/services/repositories/channelRepository';
 import userRepository, { subscriptionRepository } from '@/services/repositories/userRepository';
 import videoRepository from '@/services/repositories/videoRepository';
@@ -11,6 +12,8 @@ type Live = {
   videoId: string;
   thumbnail: string;
   chnnelThumbnail: string;
+  liveStatus: string;
+  startAt: Date;
 };
 
 async function fetchData() {
@@ -35,24 +38,64 @@ async function fetchData() {
         videoId: live.videoId ?? '',
         thumbnail: live.thumbnail ?? '',
         chnnelThumbnail: channel?.thumbnail ?? '',
+        liveStatus: live.liveStatus ?? '',
+        startAt: live.startAt ?? new Date(),
       }));
     }),
   );
   return livesWithChannelThumbnail;
 }
 
+function groupByHour(lives: Live[]) {
+  const groups: Live[][] = [];
+  let currentGroup: Live[] = [];
+  let currentHour = -1;
+  lives.forEach((live) => {
+    const hour = live.startAt.getHours();
+    if (hour !== currentHour) {
+      if (currentGroup.length) groups.push(currentGroup);
+      currentGroup = [];
+      currentHour = hour;
+    }
+    currentGroup.push(live);
+  });
+  if (currentGroup.length) groups.push(currentGroup);
+  return groups;
+}
+
 export default async function Page() {
   const liveGroups = await fetchData();
+  const sortedLives = liveGroups?.flat().sort((a, b) => a.startAt?.getTime() - b.startAt?.getTime());
+  const groupedLives = groupByHour(sortedLives ?? []);
   return (
     <>
       <Header />
       <div className='relative flex flex-wrap justify-end top-16 mx-4'>
         <CardContainer>
-          {liveGroups?.map((lives) =>
-            lives.map((live) => (
-              <LiveCard key={live.videoId} channelThumbnail={live.chnnelThumbnail} liveThumbnail={live.thumbnail} />
-            )),
-          )}
+          {groupedLives?.map((group, index) => {
+            const hasValidLive = group.some((live) => live.liveStatus === 'live' || live.liveStatus === 'upcoming');
+            return (
+              <>
+                {hasValidLive && <Splitter time={group[0].startAt} />}
+                {group.map((live) =>
+                  live.liveStatus === 'upcoming' ? (
+                    <LiveCard
+                      key={live.videoId}
+                      channelThumbnail={live.chnnelThumbnail}
+                      liveThumbnail={live.thumbnail}
+                    />
+                  ) : live.liveStatus === 'live' ? (
+                    <LiveCard
+                      key={live.videoId}
+                      channelThumbnail={live.chnnelThumbnail}
+                      liveThumbnail={live.thumbnail}
+                      onLive
+                    />
+                  ) : null,
+                )}
+              </>
+            );
+          })}
         </CardContainer>
       </div>
     </>

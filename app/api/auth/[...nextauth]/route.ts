@@ -79,6 +79,7 @@ export const authOptions: NextAuthOptions = {
       ).then((results) => results.filter((result): result is Video => result !== null));
 
       // 更新が必要な配信の配信ステータスを取得
+      // TODO: APIリクエスト一度にまとめられるかも
       const videosWithLiveStatus = await Promise.all(
         refreshRequiredVideos.map((video) => youtubeApiService.getLiveStatus(video)),
       );
