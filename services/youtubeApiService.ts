@@ -104,10 +104,13 @@ export class YoutubeApiService {
         .list({
           access_token: user.accessToken ?? undefined,
           part: ['snippet'],
-          fields: 'items(snippet(resourceId(channelId)))',
+          fields: 'items(snippet(resourceId(channelId))),nextPageToken',
           mine: true,
+          maxResults: 50,
         })
         .then((response) => response.data);
+
+      console.dir(responseData, { depth: null });
 
       // レスポンスのバリデーション
       if (!responseData.items) {
@@ -123,6 +126,39 @@ export class YoutubeApiService {
         const channelId = item.snippet.resourceId.channelId;
         return { channelId, userId: user.uuid };
       });
+
+      let nextPageToken = responseData.nextPageToken;
+      while (nextPageToken) {
+        const nextResponseData = await this.youtubeApiService.subscriptions
+          .list({
+            access_token: user.accessToken ?? undefined,
+            part: ['snippet'],
+            fields: 'items(snippet(resourceId(channelId))),nextPageToken,prevPageToken',
+            mine: true,
+            maxResults: 50,
+            pageToken: nextPageToken,
+          })
+          .then((response) => response.data);
+
+        console.dir(nextResponseData, { depth: null });
+
+        if (!nextResponseData.items) {
+          throw new Error('Invalid response data from YouTube API');
+        }
+
+        subscriptions.push(
+          ...nextResponseData.items.map((item) => {
+            if (!item.snippet || !item.snippet.resourceId || !item.snippet.resourceId.channelId) {
+              throw new Error('Invalid response data from YouTube API');
+            }
+
+            const channelId = item.snippet.resourceId.channelId;
+            return { channelId, userId: user.uuid };
+          }),
+        );
+
+        nextPageToken = nextResponseData.nextPageToken;
+      }
 
       return subscriptions;
     } catch (e) {

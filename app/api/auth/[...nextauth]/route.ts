@@ -30,6 +30,7 @@ export const authOptions: NextAuthOptions = {
         params: {
           // access_type: 'offline',
           scope: 'openid email profile https://www.googleapis.com/auth/youtube.readonly',
+          prompt: 'select_account',
         },
       },
     }),
@@ -38,9 +39,12 @@ export const authOptions: NextAuthOptions = {
     // jwtコールバック
     // クライアントとjwtをやり取りするときに発火
     async jwt({ token, account, profile }) {
+      console.log('jwt callback called');
       // サインインのときだけ発火
       // profileがサインイン時のみ存在するため
       if (!(account && account.provider === 'google' && account.access_token && profile && profile.email)) return token;
+
+      console.log('jwt callback entered signin logic');
 
       // ユーザー情報をDBに保存（DBと同期しておく）
       const user = await storeUserInfo(profile.email, account.access_token, profile.name, token.picture ?? undefined);
