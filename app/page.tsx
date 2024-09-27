@@ -7,6 +7,7 @@ import userRepository, { subscriptionRepository } from '@/services/repositories/
 import videoRepository from '@/services/repositories/videoRepository';
 import { getServerSession } from 'next-auth';
 import { authOptions } from './api/auth/[...nextauth]/route';
+import LoginButton from '@/components/LoginButton';
 
 type Live = {
   videoId: string;
@@ -67,10 +68,12 @@ export default async function Page() {
   const liveGroups = await fetchData();
   const sortedLives = liveGroups?.flat().sort((a, b) => a.startAt?.getTime() - b.startAt?.getTime());
   const groupedLives = groupByHour(sortedLives ?? []);
+  const session = await getServerSession(authOptions);
   return (
     <>
       <Header />
       <div className='relative flex flex-wrap justify-end top-16 mx-4'>
+        {session === null && (<LoginButton />)}
         <CardContainer>
           {groupedLives?.map((group, index) => {
             const hasValidLive = group.some((live) => live.liveStatus === 'live' || live.liveStatus === 'upcoming');
