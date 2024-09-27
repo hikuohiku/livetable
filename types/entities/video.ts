@@ -21,7 +21,7 @@ export const liveStatuses = ['live', 'upcoming', 'completed', 'none'] as const;
 
 export interface VideoRepository {
   findByVideoId(videoId: string): Promise<Video | null>;
-  findByChannelId(channelId: string): Promise<Video | null>;
+  findByChannelId(channelId: string): Promise<Video[]>;
   save(stream: Video): Promise<Video>;
   update(stream: Video): Promise<Video>;
   upsert(stream: Video): Promise<Video>;

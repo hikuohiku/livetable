@@ -6,6 +6,7 @@ import youtubeRssService from '@/services/youtubeRssService';
 import Channel from '@/types/entities/channel';
 import { GoogleUser, Subscription } from '@/types/entities/user';
 import Video from '@/types/entities/video';
+import { NextAuthOptions } from 'next-auth';
 import NextAuth from 'next-auth/next';
 import GoogleProvider from 'next-auth/providers/google';
 
@@ -19,8 +20,7 @@ if (!clientSecret) {
   throw new Error('GOOGLE_CLIENT_SECRET is not set');
 }
 
-// NextAuthの設定
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
   secret: process.env.AUTH_SECRET,
   providers: [
     GoogleProvider({
@@ -30,6 +30,7 @@ const handler = NextAuth({
         params: {
           // access_type: 'offline',
           scope: 'openid email profile https://www.googleapis.com/auth/youtube.readonly',
+          prompt: 'select_account',
         },
       },
     }),
@@ -38,9 +39,12 @@ const handler = NextAuth({
     // jwtコールバック
     // クライアントとjwtをやり取りするときに発火
     async jwt({ token, account, profile }) {
+      console.log('jwt callback called');
       // サインインのときだけ発火
       // profileがサインイン時のみ存在するため
       if (!(account && account.provider === 'google' && account.access_token && profile && profile.email)) return token;
+
+      console.log('jwt callback entered signin logic');
 
       // ユーザー情報をDBに保存（DBと同期しておく）
       const user = await storeUserInfo(profile.email, account.access_token, profile.name, token.picture ?? undefined);
@@ -75,6 +79,7 @@ const handler = NextAuth({
       ).then((results) => results.filter((result): result is Video => result !== null));
 
       // 更新が必要な配信の配信ステータスを取得
+      // TODO: APIリクエスト一度にまとめられるかも
       const videosWithLiveStatus = await Promise.all(
         refreshRequiredVideos.map((video) => youtubeApiService.getLiveStatus(video)),
       );
@@ -89,7 +94,10 @@ const handler = NextAuth({
       return token;
     },
   },
-});
+};
+
+// NextAuthの設定
+const handler = NextAuth(authOptions);
 
 /**
  * ユーザー情報をDBに保存する関数

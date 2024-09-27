@@ -1,14 +1,16 @@
-import { ReactNode } from 'react';
 import Image from 'next/image';
+import { ReactNode } from 'react';
 
 interface LiveCardProps {
   channelThumbnail: string;
   liveThumbnail: string;
+  onLive?: boolean;
 }
 
-function LiveCard({ channelThumbnail, liveThumbnail }: LiveCardProps) {
+function LiveCard({ channelThumbnail, liveThumbnail, onLive = false }: LiveCardProps) {
+  const backGroundColor = onLive ? 'bg-red-600/20' : 'bg-inherit';
   return (
-    <div className='liveCard flex justify-center items-center gap-2 rounded-lg m-2 p-1 w-72'>
+    <div className={`liveCard ${backGroundColor} flex justify-center items-center gap-2 rounded-lg m-2 p-1 w-72`}>
       <div className='relative'>
         <Image
           src={channelThumbnail}
