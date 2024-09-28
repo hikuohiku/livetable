@@ -2,6 +2,8 @@ import Video, { VideoRepository, liveStatuses } from '@/types/entities/video';
 
 import prisma from '@/lib/prismaClient';
 
+import { Prisma } from '@prisma/client';
+
 export class PrismaVideoRepository implements VideoRepository {
   async findByVideoId(videoId: string): Promise<Video | null> {
     const video = await prisma.video.findUnique({ where: { videoId } });
@@ -41,6 +43,27 @@ export class PrismaVideoRepository implements VideoRepository {
       ...upsertedVideo,
       liveStatus: isLiveStatus(upsertedVideo.liveStatus) ? upsertedVideo.liveStatus : undefined,
     };
+  }
+
+  async upsertMany(videos: Video[]): Promise<void> {
+    const query = videos.map((video) =>
+      prisma.video.upsert({
+        where: { videoId: video.videoId },
+        update: video,
+        create: video,
+      }),
+    );
+    await prisma.$transaction([...query]);
+  }
+
+  async removeMany(videos: Video[], whereCriteria?: Prisma.VideoWhereInput): Promise<void> {
+    const idList = videos.map((video) => {
+      return video.videoId;
+    });
+    const filter = whereCriteria ?? {
+      videoId: { in: idList },
+    };
+    await prisma.video.deleteMany({ where: filter });
   }
 }
 
