@@ -60,29 +60,7 @@ export const authOptions: NextAuthOptions = {
       const channelsWithIdOnly: Channel[] = subscriptions.map((subscription) => {
         return { channelId: subscription.channelId };
       });
-      // // RSSから配信情報を取得
-      // const videoGroups: Video[][] = await Promise.all(
-      //   channelsWithIdOnly.map((channel) => youtubeRssService.getStreams(channel)),
-      // );
-      // const videos = videoGroups.flat();
-      //
-      // // 配信情報をDBと照合
-      // // DBに存在しないか，DB上でliveStatusが"live"か"upcoming"のものをまとめる
-      // const refreshRequiredVideos: Video[] = await Promise.all(
-      //   videos.map(async (video) => {
-      //     const savedVideo = await videoRepository.findByVideoId(video.videoId);
-      //     if (!savedVideo || savedVideo.liveStatus === 'live' || savedVideo.liveStatus === 'upcoming') {
-      //       return video;
-      //     }
-      //     return null;
-      //   }),
-      // ).then((results) => results.filter((result): result is Video => result !== null));
 
-      // // DBから配信情報をgetする
-      // const initialVideos = channelsWithIdOnly.map((channel) => {
-      //   return videoRepository.findByChannelId(channel.channelId);
-      // });
-      //
       // RSSから配信情報を取得
       const videosFromRSS = channelsWithIdOnly.map((channel) => {
         return youtubeRssService.getStreams(channel);
@@ -145,9 +123,6 @@ export const authOptions: NextAuthOptions = {
       // const videosWithLiveStatus = await Promise.all(
       //   refreshRequiredVideos.map((video) => youtubeApiService.getLiveStatus(video)),
       // );
-
-      // // 配信情報をDBに保存
-      // await Promise.all(videosWithLiveStatus.map((video) => videoRepository.upsert(video)));
 
       // 配信情報をDBに保存
       const storeVideosPromise = Promise.all(videos).then((videoGroups) => {
