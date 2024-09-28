@@ -60,31 +60,103 @@ export const authOptions: NextAuthOptions = {
       const channelsWithIdOnly: Channel[] = subscriptions.map((subscription) => {
         return { channelId: subscription.channelId };
       });
+      // // RSSから配信情報を取得
+      // const videoGroups: Video[][] = await Promise.all(
+      //   channelsWithIdOnly.map((channel) => youtubeRssService.getStreams(channel)),
+      // );
+      // const videos = videoGroups.flat();
+      //
+      // // 配信情報をDBと照合
+      // // DBに存在しないか，DB上でliveStatusが"live"か"upcoming"のものをまとめる
+      // const refreshRequiredVideos: Video[] = await Promise.all(
+      //   videos.map(async (video) => {
+      //     const savedVideo = await videoRepository.findByVideoId(video.videoId);
+      //     if (!savedVideo || savedVideo.liveStatus === 'live' || savedVideo.liveStatus === 'upcoming') {
+      //       return video;
+      //     }
+      //     return null;
+      //   }),
+      // ).then((results) => results.filter((result): result is Video => result !== null));
+
+      // // DBから配信情報をgetする
+      // const initialVideos = channelsWithIdOnly.map((channel) => {
+      //   return videoRepository.findByChannelId(channel.channelId);
+      // });
+      //
       // RSSから配信情報を取得
-      const videoGroups: Video[][] = await Promise.all(
-        channelsWithIdOnly.map((channel) => youtubeRssService.getStreams(channel)),
-      );
-      const videos = videoGroups.flat();
+      const videosFromRSS = channelsWithIdOnly.map((channel) => {
+        return youtubeRssService.getStreams(channel);
+      });
 
-      // 配信情報をDBと照合
-      // DBに存在しないか，DB上でliveStatusが"live"か"upcoming"のものをまとめる
-      const refreshRequiredVideos: Video[] = await Promise.all(
-        videos.map(async (video) => {
-          const savedVideo = await videoRepository.findByVideoId(video.videoId);
-          if (!savedVideo || savedVideo.liveStatus === 'live' || savedVideo.liveStatus === 'upcoming') {
-            return video;
-          }
-          return null;
-        }),
-      ).then((results) => results.filter((result): result is Video => result !== null));
+      // DBにある情報とRSSから取得してきた情報をマージする
+      // RSSから得たvideosをベースに、すでに持っている配信ステータスなどの情報を追加する
+      const mergedVideos = videosFromRSS.map(async (videosPromise) => {
+        const videos = await videosPromise;
+        return await Promise.all(
+          videos.map(async (video) => {
+            const videoFromDB = await videoRepository.findByVideoId(video.videoId);
+            return videoFromDB
+              ? { ...video, liveStatus: videoFromDB.liveStatus, startAt: videoFromDB.startAt, endAt: videoFromDB.endAt }
+              : video;
+          }),
+        );
+      });
 
-      // 更新が必要な配信の配信ステータスを取得
-      // TODO: APIリクエスト一度にまとめられるかも
-      const videosWithLiveStatus = await Promise.all(
-        refreshRequiredVideos.map((video) => youtubeApiService.getLiveStatus(video)),
-      );
+      // 過去のデータをDBから削除
+      const removeVideosPromises = videosFromRSS.map(async (videos) => {
+        const result = await videos;
+        const channelId = result[0]?.channelId;
+        const videoIdList = result.map((video) => video.videoId);
+        return (
+          channelId &&
+          videoRepository.removeMany(result, {
+            AND: [
+              {
+                channelId: {
+                  equals: channelId,
+                },
+              },
+              {
+                videoId: {
+                  notIn: videoIdList,
+                },
+              },
+            ],
+          })
+        );
+      });
+
+      // 必要に応じてYoutubeAPIから配信ステータスを取得
+      const videos = mergedVideos.map(async (videos) => {
+        const result = await videos;
+        return await Promise.all(
+          result
+            .filter((video) => {
+              return !video.liveStatus || video.liveStatus === 'live' || video.liveStatus === 'upcoming';
+            })
+            .map((video) => {
+              return youtubeApiService.getLiveStatus(video);
+            }),
+        );
+      });
+
+      // // 更新が必要な配信の配信ステータスを取得
+      // // TODO: APIリクエスト一度にまとめられるかも
+      // const videosWithLiveStatus = await Promise.all(
+      //   refreshRequiredVideos.map((video) => youtubeApiService.getLiveStatus(video)),
+      // );
+
+      // // 配信情報をDBに保存
+      // await Promise.all(videosWithLiveStatus.map((video) => videoRepository.upsert(video)));
+
       // 配信情報をDBに保存
-      await Promise.all(videosWithLiveStatus.map((video) => videoRepository.upsert(video)));
+      const storeVideosPromise = Promise.all(videos).then((videoGroups) => {
+        return videoRepository.upsertMany(videoGroups.flat());
+      });
+
+      // 関数を抜ける前に必要な非同期処理をawait
+      // DBの状態が同期してから次の処理にうつってほしい
+      await Promise.all([...removeVideosPromises, storeVideosPromise]);
 
       // JWTにユーザーidを追加
       token = {
