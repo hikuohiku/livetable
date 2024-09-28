@@ -7,6 +7,7 @@ import { getServerSession } from 'next-auth';
 import CardContainer from './CardContainer';
 import Splitter from './Splitter';
 import LiveCard from './LiveCard';
+import React from 'react';
 
 const LiveTable = async () => {
   const session = await getServerSession(authOptions);
@@ -52,9 +53,9 @@ const LiveTable = async () => {
 
   return livesGroupedByStartAtHour ? (
     <CardContainer>
-      {Object.entries(livesGroupedByStartAtHour).map(([_, values]) => {
+      {Object.entries(livesGroupedByStartAtHour).map(([key, values]) => {
         return (
-          <>
+          <React.Fragment key={key}>
             {values[0]?.startAt && <Splitter time={values[0].startAt} />}
             {values.map((live) => {
               return (
@@ -68,7 +69,7 @@ const LiveTable = async () => {
                 />
               );
             })}
-          </>
+          </React.Fragment>
         );
       })}
     </CardContainer>
