@@ -35,6 +35,11 @@ export class PrismaUserRepository implements UserRepository {
 }
 
 export class PrismaGoogleUserRepository extends PrismaUserRepository implements GoogleUserRepository {
+  async find(user: User): Promise<GoogleUser | null> {
+    const googleUser = await prisma.googleUser.findUnique({ where: { userId: user.uuid } });
+    return googleUser && { ...user, ...googleUser };
+  }
+
   async update(user: GoogleUser): Promise<GoogleUser> {
     const googleUser = await prisma.googleUser.update({
       where: { userId: user.uuid },
