@@ -61,11 +61,12 @@ const LiveTable = async () => {
               return (
                 <LiveCard
                   key={live.videoId}
-                  channelThumbnail={
-                    (channels && channels.find((channel) => channel?.channelId === live.channelId)?.thumbnail) ?? ''
+                  channel={
+                    channels
+                      ? channels.find((channel) => channel?.channelId === live.channelId) ?? undefined
+                      : undefined
                   }
-                  liveThumbnail={live.thumbnail ?? ''}
-                  onLive={live.liveStatus === 'live'}
+                  live={live}
                 />
               );
             })}
