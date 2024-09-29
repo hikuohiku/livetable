@@ -25,4 +25,6 @@ export interface VideoRepository {
   save(stream: Video): Promise<Video>;
   update(stream: Video): Promise<Video>;
   upsert(stream: Video): Promise<Video>;
+  upsertMany(videos: Video[]): Promise<void>;
+  removeMany(videos: Video[]): Promise<void>;
 }
