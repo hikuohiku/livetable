@@ -29,6 +29,7 @@ export interface UserRepository {
 }
 
 export interface GoogleUserRepository extends UserRepository {
+  find(user: User): Promise<GoogleUser | null>;
   update(user: GoogleUser): Promise<GoogleUser>;
   save(user: GoogleUser): Promise<GoogleUser>;
   upsert(user: GoogleUser): Promise<GoogleUser>;

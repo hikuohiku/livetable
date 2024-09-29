@@ -56,16 +56,17 @@ const LiveTable = async () => {
       {Object.entries(livesGroupedByStartAtHour).map(([key, values]) => {
         return (
           <React.Fragment key={key}>
-            {values[0]?.startAt && <Splitter time={values[0].startAt} />}
+            {values[0]?.startAt && <Splitter time={new Date(values[0].startAt.setMinutes(0, 0, 0))} />}
             {values.map((live) => {
               return (
                 <LiveCard
                   key={live.videoId}
-                  channelThumbnail={
-                    (channels && channels.find((channel) => channel?.channelId === live.channelId)?.thumbnail) ?? ''
+                  channel={
+                    channels
+                      ? channels.find((channel) => channel?.channelId === live.channelId) ?? undefined
+                      : undefined
                   }
-                  liveThumbnail={live.thumbnail ?? ''}
-                  onLive={live.liveStatus === 'live'}
+                  live={live}
                 />
               );
             })}
