@@ -1,15 +1,20 @@
 import { varelaRound } from '@/utils/font';
 import UserIcon from '@/components/UserIcon';
 import ProfileCard from '@/components/ProfileCard';
+import { GoogleUser } from '@/types/entities/user';
 
-function Header() {
+type HeaderProps = {
+  user: GoogleUser | null;
+};
+
+const Header = ({ user }: HeaderProps) => {
   return (
     <header className='z-[10] fixed flex justify-between items-center inset-0 h-16'>
       <h1 className={`${varelaRound.className} block text-2xl text-logo mx-6`}>livetable</h1>
-      <UserIcon />
+      <UserIcon user={user} />
       <ProfileCard />
     </header>
   );
-}
+};
 
 export default Header;
