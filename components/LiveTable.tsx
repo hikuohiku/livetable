@@ -1,13 +1,15 @@
+import { getServerSession } from 'next-auth';
+import React, { ReactNode } from 'react';
+
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import channelRepository from '@/services/repositories/channelRepository';
 import userRepository, { subscriptionRepository } from '@/services/repositories/userRepository';
 import videoRepository from '@/services/repositories/videoRepository';
 import Video from '@/types/entities/video';
-import { getServerSession } from 'next-auth';
-import CardContainer from './CardContainer';
-import Splitter from './Splitter';
+
 import LiveCard from './LiveCard';
-import React from 'react';
+import Splitter from './Splitter';
+
 
 const LiveTable = async () => {
   const session = await getServerSession(authOptions);

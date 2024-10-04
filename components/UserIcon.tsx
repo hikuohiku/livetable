@@ -1,6 +1,7 @@
 import Image from 'next/image';
-import { GoogleUser } from '@/types/entities/user';
 import { SVGProps } from 'react';
+
+import { GoogleUser } from '@/types/entities/user';
 
 type UserIconProps = {
   user: GoogleUser | null;

@@ -20,4 +20,4 @@ const LoginButtonContainer = () => {
   return <LoginButton onClick={onClick} />;
 };
 
-export default LoginButtonContainer;
+export default LoginButtonContainer as LoginButton;

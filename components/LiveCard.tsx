@@ -1,8 +1,8 @@
-import Video from '@/types/entities/video';
-import Channel from '@/types/entities/channel';
 import Image from 'next/image';
 import { ReactNode } from 'react';
 
+import Channel from '@/types/entities/channel';
+import Video from '@/types/entities/video';
 interface LiveCardProps {
   live: Video;
   channel?: Channel;

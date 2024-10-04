@@ -1,9 +1,12 @@
-import Header from '@/components/Header';
-import LoginButton from '@/components/LoginButton';
-import LiveTable from '@/components/LiveTable';
 import { getServerSession } from 'next-auth';
-import { authOptions } from './api/auth/[...nextauth]/route';
+
+import Header from '@/components/Header';
+import LiveTable from '@/components/LiveTable';
+import LoginButton from '@/components/LoginButton';
 import userRepository, { googleUserRepository } from '@/services/repositories/userRepository';
+
+import { authOptions } from './api/auth/[...nextauth]/route';
+
 
 export default async function Page() {
   const session = await getServerSession(authOptions);

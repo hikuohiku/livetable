@@ -1,3 +1,4 @@
+import prisma from '@/lib/prismaClient';
 import User, {
   GoogleUser,
   GoogleUserRepository,
@@ -5,8 +6,6 @@ import User, {
   SubscriptionRepository,
   UserRepository,
 } from '@/types/entities/user';
-
-import prisma from '@/lib/prismaClient';
 
 export class PrismaUserRepository implements UserRepository {
   async findByUuid(uuid: string): Promise<User | null> {
