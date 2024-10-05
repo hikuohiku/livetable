@@ -3,9 +3,9 @@ import { SVGProps } from 'react';
 
 import { GoogleUser } from '@/types/entities/user';
 
-type UserIconProps = {
-  user: GoogleUser | null;
-};
+interface UserIconProps {
+  user?: GoogleUser | null;
+}
 
 const UserIcon = ({ user }: UserIconProps) => {
   return (

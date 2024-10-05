@@ -1,9 +1,9 @@
 'use client';
 import { signIn } from 'next-auth/react';
 
-type LoginButtonProps = {
+interface LoginButtonProps {
   onClick: React.MouseEventHandler<HTMLButtonElement>;
-};
+}
 
 const LoginButton = ({ onClick }: LoginButtonProps) => {
   return (
@@ -20,4 +20,4 @@ const LoginButtonContainer = () => {
   return <LoginButton onClick={onClick} />;
 };
 
-export default LoginButtonContainer as LoginButton;
+export default LoginButtonContainer;

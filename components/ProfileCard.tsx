@@ -1,9 +1,9 @@
 'use client';
 import { signOut } from 'next-auth/react';
 
-type ProfileCardProps = {
+interface ProfileCardProps {
   onSignOutClick: React.MouseEventHandler<HTMLButtonElement>;
-};
+}
 
 const ProfileCard = ({ onSignOutClick }: ProfileCardProps) => {
   return (
