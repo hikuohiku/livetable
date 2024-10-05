@@ -10,9 +10,10 @@ export default interface Video {
   thumbnail?: string | null;
   startAt?: Date | null;
   endAt?: Date | null;
-  liveStatus?: (typeof liveStatuses)[number] | null;
+  liveStatus?: LiveStatus;
 }
 
+export type LiveStatus = (typeof liveStatuses)[number] | null;
 export const liveStatuses = ['live', 'upcoming', 'completed', 'none'] as const;
 
 /**

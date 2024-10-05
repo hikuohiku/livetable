@@ -108,16 +108,31 @@ const nextAuthCallbacks: Partial<CallbacksOptions> = {
 
     // 必要に応じてYoutubeAPIから配信ステータスを取得
     // TODO: APIリクエスト一度にまとめたほうがよいかも
-    const updatedVideos = mergedVideos.then((videoGroups) =>
-      videoGroups.map(async (videos) => {
-        const result = await videos;
-        return result.map(async (video) => {
-          const result = await video;
-          const needRefresh = !result.liveStatus || result.liveStatus === 'live' || result.liveStatus === 'upcoming';
-          return needRefresh ? youtubeApiService.getLiveStatus(result) : undefined;
-        });
-      }),
-    );
+    // const updatedVideos = mergedVideos.then((videoGroups) =>
+    //   videoGroups.map(async (videos) => {
+    //     const result = await videos;
+    //     return result.map(async (video) => {
+    //       const result = await video;
+    //       const needRefresh = !result.liveStatus || result.liveStatus === 'live' || result.liveStatus === 'upcoming';
+    //       return needRefresh ? youtubeApiService.getLiveStatus(result) : undefined;
+    //     });
+    //   }),
+    // );
+
+    const updatedVideos = mergedVideos.then(async (videoGroups) => {
+      const resolvedVideoGroups = await Promise.all(
+        videoGroups.map(async (videosPromise) => {
+          const videos = await videosPromise;
+          const resolvedVideos = await Promise.all(videos);
+          return resolvedVideos;
+        }),
+      );
+      const withLiveStatus = await youtubeApiService.getLiveStatusMany(resolvedVideoGroups.flat());
+      const onlyNeedRefresh = withLiveStatus.filter((video) => {
+        return !video.liveStatus || video.liveStatus === 'live' || video.liveStatus === 'upcoming';
+      });
+      return onlyNeedRefresh;
+    });
 
     // 更新した配信情報をDBに保存
     const storeVideosPromise = updatedVideos.then((result) =>

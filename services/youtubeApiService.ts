@@ -1,8 +1,9 @@
+import { google, youtube_v3 } from 'googleapis';
+
 import Channel from '@/types/entities/channel';
 import { GoogleUser, Subscription } from '@/types/entities/user';
 import Video from '@/types/entities/video';
-
-import { google, youtube_v3 } from 'googleapis';
+import splitArray from '@/utils/splitArray';
 
 export class YoutubeApiService {
   private apiKey: string;
@@ -93,6 +94,52 @@ export class YoutubeApiService {
       };
     } catch (e) {
       //TODO: エラー処理
+      console.error(e);
+      throw new Error('Failed to fetch data from YouTube API');
+    }
+  }
+
+  async getLiveStatusMany(videos: Video[]): Promise<Video[]> {
+    try {
+      // 配列を50個ずつに分割
+      const splittedVideos = splitArray(videos, 50);
+
+      // APIにリクエストを送信
+      const responseData = await this.youtubeApiService.videos
+        .list({
+          key: this.apiKey,
+          part: ['liveStreamingDetails'],
+          fields: 'items(id,liveStreamingDetails(actualStartTime,actualEndTime,scheduledStartTime))',
+          id: splittedVideos[0].map((v) => v.videoId),
+        })
+        .then((response) => response.data);
+
+      // レスポンスのバリデーション
+      if (!responseData.items) {
+        throw new Error('Invalid response data from YouTube API');
+      }
+      const responseItems = responseData.items;
+      // startAt, endAt, liveStatusを取得
+      const videosWithLiveStatus = videos.map((v): Video => {
+        const item = responseItems.find((item) => item.id === v.videoId);
+        if (!item || !item.liveStreamingDetails) {
+          return { ...v, liveStatus: 'none' };
+        }
+        const streamingDetails = item.liveStreamingDetails;
+        const { actualStartTime, actualEndTime, scheduledStartTime } = streamingDetails;
+        const startAt = actualStartTime || scheduledStartTime;
+        const endAt = actualEndTime;
+        // liveStatusを推定するロジック
+        const liveStatus = actualEndTime ? 'completed' : actualStartTime ? 'live' : 'upcoming';
+        return {
+          ...v,
+          startAt: startAt ? new Date(startAt) : undefined,
+          endAt: endAt ? new Date(endAt) : undefined,
+          liveStatus,
+        };
+      });
+      return videosWithLiveStatus;
+    } catch (e) {
       console.error(e);
       throw new Error('Failed to fetch data from YouTube API');
     }
