@@ -1,7 +1,7 @@
+import Parser from 'rss-parser';
+
 import Channel from '@/types/entities/channel';
 import Video from '@/types/entities/video';
-
-import Parser from 'rss-parser';
 
 const youtubeRssUrl = 'https://www.youtube.com/feeds/videos.xml?channel_id=';
 
@@ -32,27 +32,32 @@ export class YoutubeRssService {
       return feed;
     } catch (error) {
       // TODO: この辺勉強してちゃんと書く
-      console.error(error);
-      throw new Error('Failed to get feed');
+      console.error('Failed to get feed');
+      throw error;
     }
   }
 
   async getStreams(channel: Channel): Promise<Video[]> {
-    const feed = await this.getFeed(channel);
-    const streams = feed.items.map((item) => {
-      const descriptionArray = (item['media:group']?.[0]?.['media:description'] as String[]) ?? '';
-      const description = descriptionArray.join('');
-      const stream: Video = {
-        videoId: item.videoId,
-        channelId: channel.channelId,
-        title: item.title,
-        description: description,
-        thumbnail: item['media:group']?.[0]?.['media:thumbnail']?.[0]?.$.url,
-      };
-      return stream;
-    });
-    // console.log(streams);
-    return streams.slice(0, 5);
+    try {
+      const feed = await this.getFeed(channel);
+      const streams = feed.items.map((item) => {
+        const descriptionArray = (item['media:group']?.[0]?.['media:description'] as String[]) ?? '';
+        const description = descriptionArray.join('');
+        const stream: Video = {
+          videoId: item.videoId,
+          channelId: channel.channelId,
+          title: item.title,
+          description: description,
+          thumbnail: item['media:group']?.[0]?.['media:thumbnail']?.[0]?.$.url,
+        };
+        return stream;
+      });
+      // console.log(streams);
+      return streams.slice(0, 5);
+    } catch (error) {
+      console.error('Failed to get streams with RSS');
+      throw error;
+    }
   }
 }
 
