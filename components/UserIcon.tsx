@@ -1,10 +1,11 @@
 import Image from 'next/image';
-import { GoogleUser } from '@/types/entities/user';
 import { SVGProps } from 'react';
 
-type UserIconProps = {
-  user: GoogleUser | null;
-};
+import { GoogleUser } from '@/types/entities/user';
+
+interface UserIconProps {
+  user?: GoogleUser | null;
+}
 
 const UserIcon = ({ user }: UserIconProps) => {
   return (

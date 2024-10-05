@@ -1,11 +1,11 @@
-import { varelaRound } from '@/utils/font';
-import UserIcon from '@/components/UserIcon';
 import ProfileCard from '@/components/ProfileCard';
+import UserIcon from '@/components/UserIcon';
 import { GoogleUser } from '@/types/entities/user';
+import { varelaRound } from '@/utils/font';
 
-type HeaderProps = {
-  user: GoogleUser | null;
-};
+interface HeaderProps {
+  user?: GoogleUser | null;
+}
 
 const Header = ({ user }: HeaderProps) => {
   return (

@@ -1,6 +1,5 @@
-import Channel, { ChannelRepository } from '@/types/entities/channel';
-
 import prisma from '@/lib/prismaClient';
+import Channel, { ChannelRepository } from '@/types/entities/channel';
 
 export class PrismaChannelRepository implements ChannelRepository {
   async findByChannelId(channelId: string): Promise<Channel | null> {

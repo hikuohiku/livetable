@@ -1,3 +1,7 @@
+import { CallbacksOptions, NextAuthOptions } from 'next-auth';
+import NextAuth from 'next-auth/next';
+import GoogleProvider from 'next-auth/providers/google';
+
 import channelRepository from '@/services/repositories/channelRepository';
 import userRepository, { googleUserRepository, subscriptionRepository } from '@/services/repositories/userRepository';
 import videoRepository from '@/services/repositories/videoRepository';
@@ -7,9 +11,6 @@ import Channel from '@/types/entities/channel';
 import { GoogleUser, Subscription } from '@/types/entities/user';
 import Video from '@/types/entities/video';
 import devlog from '@/utils/devlog';
-import { CallbacksOptions, NextAuthOptions } from 'next-auth';
-import NextAuth from 'next-auth/next';
-import GoogleProvider from 'next-auth/providers/google';
 
 const clientId = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
