@@ -1,8 +1,9 @@
+import { google, youtube_v3 } from 'googleapis';
+
 import Channel from '@/types/entities/channel';
 import { GoogleUser, Subscription } from '@/types/entities/user';
 import Video from '@/types/entities/video';
-
-import { google, youtube_v3 } from 'googleapis';
+import splitArray from '@/utils/splitArray';
 
 export class YoutubeApiService {
   private apiKey: string;
@@ -47,9 +48,8 @@ export class YoutubeApiService {
 
       return streamWithStartAtTime;
     } catch (e) {
-      // TODO: エラー処理
-      console.error(e);
-      throw new Error('Failed to fetch data from YouTube API');
+      console.error('Failed to fetch data from YouTube API');
+      throw e;
     }
   }
 
@@ -92,9 +92,56 @@ export class YoutubeApiService {
         liveStatus,
       };
     } catch (e) {
-      //TODO: エラー処理
-      console.error(e);
-      throw new Error('Failed to fetch data from YouTube API');
+      console.error('Failed to fetch data from YouTube API');
+      throw e;
+    }
+  }
+
+  async getLiveStatusMany(videos: Video[]): Promise<Video[]> {
+    try {
+      // 配列を50個ずつに分割
+      const splittedVideos = splitArray(videos, 50);
+
+      // APIにリクエストを送信
+      const responses = await Promise.all(
+        splittedVideos.map(async (videos) => {
+          return await this.youtubeApiService.videos.list({
+            key: this.apiKey,
+            part: ['liveStreamingDetails'],
+            fields: 'items(id,liveStreamingDetails(actualStartTime,actualEndTime,scheduledStartTime))',
+            maxResults: 50,
+            id: videos.map((v) => v.videoId),
+          });
+        }),
+      );
+
+      const responseDataGroups = responses.map((response) => response.data);
+
+      const responseItems = responseDataGroups.map((responseData) => responseData.items).flat();
+
+      // startAt, endAt, liveStatusを取得
+      const videosWithLiveStatus = videos.map((v): Video => {
+        const item = responseItems.find((item) => item?.id === v.videoId);
+        if (!item || !item.liveStreamingDetails) {
+          return { ...v, liveStatus: 'none' };
+        }
+        const streamingDetails = item.liveStreamingDetails;
+        const { actualStartTime, actualEndTime, scheduledStartTime } = streamingDetails;
+        const startAt = actualStartTime || scheduledStartTime;
+        const endAt = actualEndTime;
+        // liveStatusを推定するロジック
+        const liveStatus = actualEndTime ? 'completed' : actualStartTime ? 'live' : 'upcoming';
+        return {
+          ...v,
+          startAt: startAt ? new Date(startAt) : undefined,
+          endAt: endAt ? new Date(endAt) : undefined,
+          liveStatus,
+        };
+      });
+      return videosWithLiveStatus;
+    } catch (e) {
+      console.error('Failed to fetch data from YouTube API');
+      throw e;
     }
   }
 
@@ -162,36 +209,37 @@ export class YoutubeApiService {
 
       return subscriptions;
     } catch (e) {
-      // TODO: エラー処理
-      console.error(e);
-      throw new Error('Failed to fetch data from YouTube API');
+      console.error('Failed to fetch data from YouTube API');
+      throw e;
     }
   }
 
   async getChannel(channels: Channel[]): Promise<Channel[]> {
     try {
-      const responseData = await this.youtubeApiService.channels
-        .list({
-          key: this.apiKey,
-          part: ['snippet', 'id'],
-          id: channels.map((c) => c.channelId),
-          fields: 'items(snippet(title,thumbnails.default.url),id)',
-        })
-        .then((response) => response.data);
+      const splittedChannels = splitArray(channels, 50);
+      const responses = await Promise.all(
+        splittedChannels.map(async (channels) => {
+          return await this.youtubeApiService.channels.list({
+            key: this.apiKey,
+            part: ['snippet', 'id'],
+            id: channels.map((c) => c.channelId),
+            fields: 'items(snippet(title,thumbnails.default.url),id)',
+          });
+        }),
+      );
 
-      // レスポンスのバリデーション
-      if (!responseData.items) {
-        throw new Error('Invalid response data from YouTube API');
-      }
-      const responseDataItems = responseData.items;
+      const responseDataGroups = responses.map((response) => response.data);
+
+      const responseDataItems = responseDataGroups.map((responseData) => responseData.items).flat();
 
       // channelを返す
       const channelsWithTitle: Channel[] = channels.map((c) => {
-        const item = responseDataItems.find((item) => item.id === c.channelId);
+        const item = responseDataItems.find((item) => item?.id === c.channelId);
 
         if (!item || !item.snippet || !item.snippet.title) {
-          throw new Error('Invalid response data from YouTube API');
+          throw new Error('Invalid data response from YouTube API');
         }
+
         const title = item.snippet.title;
 
         const thumbnail = item.snippet.thumbnails?.default?.url ?? undefined;
@@ -201,9 +249,8 @@ export class YoutubeApiService {
 
       return channelsWithTitle;
     } catch (e) {
-      // TODO: エラー処理
-      console.error(e);
-      throw new Error('Failed to fetch data from YouTube API');
+      console.error('Failed to fetch data from YouTube API');
+      throw e;
     }
   }
 }

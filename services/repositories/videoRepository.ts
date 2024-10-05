@@ -1,8 +1,7 @@
-import Video, { VideoRepository, liveStatuses } from '@/types/entities/video';
+import { Prisma } from '@prisma/client';
 
 import prisma from '@/lib/prismaClient';
-
-import { Prisma } from '@prisma/client';
+import Video, { VideoRepository, liveStatuses } from '@/types/entities/video';
 
 export class PrismaVideoRepository implements VideoRepository {
   async findByVideoId(videoId: string): Promise<Video | null> {

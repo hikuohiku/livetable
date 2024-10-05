@@ -1,9 +1,9 @@
-import VideoInfoService from '@/types/services/videoInfoService';
-import ChannelInfoService from '@/types/services/channelInfoService';
-import youtubeRssService from '@/services/youtubeRssService';
 import youtubeApiService from '@/services/youtubeApiService';
+import youtubeRssService from '@/services/youtubeRssService';
 import Channel from '@/types/entities/channel';
 import Video from '@/types/entities/video';
+import ChannelInfoService from '@/types/services/channelInfoService';
+import VideoInfoService from '@/types/services/videoInfoService';
 
 export class YoutubeService implements VideoInfoService, ChannelInfoService {
   async getStreams(channel: Channel): Promise<Video[]> {
