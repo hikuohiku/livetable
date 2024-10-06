@@ -3,6 +3,7 @@ services:
     image: hikuohiku/hikuohiku:livetable
     env_file:
       - .env
+      - .env.local
       - .env.production.local
     ports:
       - '3000:3000'
