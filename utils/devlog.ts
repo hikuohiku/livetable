@@ -6,6 +6,14 @@ const devlog = (...params: devlogParams) => {
   }
 };
 
+type devDirParams = Parameters<typeof console.dir>;
+
+const devDir = (...params: devDirParams) => {
+  if (process.env.NODE_ENV === 'development') {
+    console.dir(...params);
+  }
+};
+
 type devTimeParams = Parameters<typeof console.time>;
 
 const devTime = (...params: devTimeParams) => {
@@ -22,5 +30,5 @@ const devTimeEnd = (...params: devTimeEndParams) => {
   }
 };
 
-export { devTime, devTimeEnd };
+export { devTime, devTimeEnd, devDir };
 export default devlog;
