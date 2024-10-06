@@ -1,7 +1,6 @@
-version: '3.8'
 services:
   app:
-    build: .
+    image: hikuohiku/hikuohiku:livetable
     env_file:
       - .env
       - .env.production.local
