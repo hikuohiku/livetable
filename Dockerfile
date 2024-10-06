@@ -34,8 +34,27 @@ RUN \
   else echo "Lockfile not found." && exit 1; \
   fi
 
+# development image
+FROM base AS development
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+RUN yarn prisma generate;
+
+ENV NODE_ENV=development
+
+EXPOSE 3000
+
+ENV PORT=3000
+
+# server.js is created by next build from the standalone output
+# https://nextjs.org/docs/pages/api-reference/next-config-js/output
+ENV HOSTNAME="0.0.0.0"
+CMD ["yarn","dev"]
+
 # Production image, copy all the files and run next
-FROM base AS runner
+FROM base AS production
 WORKDIR /app
 
 ENV NODE_ENV=production
