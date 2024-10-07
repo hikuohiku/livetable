@@ -1,3 +1,7 @@
+'use client';
+// ユーザーのローカルタイムゾーンを考慮するためクライアントコンポーネント
+import { format } from 'date-fns';
+
 import { robotoBold } from '@/utils/font';
 
 interface TimeTipProps {
@@ -6,10 +10,7 @@ interface TimeTipProps {
 }
 
 function TimeTip({ time, className }: TimeTipProps) {
-  const timeString = Intl.DateTimeFormat('ja-JP', {
-    hour: 'numeric',
-    minute: 'numeric',
-  }).format(time);
+  const timeString = format(time, 'HH:mm');
   return <div className={`${robotoBold.className} text-sm text-logo text-center w-10 ${className}`}>{timeString}</div>;
 }
 
