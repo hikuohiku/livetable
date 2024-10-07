@@ -12,34 +12,41 @@ interface LiveTableProps {
 }
 
 const LiveTable = ({ lives, channels }: LiveTableProps) => {
-  const livesSortedByStartAt =
-    lives && lives.toSorted((a, b) => (a.startAt ? (b.startAt ? a.startAt.getTime() - b.startAt.getTime() : -1) : 1));
-  const livesGroupedByStartAtHour =
-    livesSortedByStartAt &&
-    livesSortedByStartAt.reduce<Record<string, Video[]>>((arr, live) => {
-      const date = live.startAt?.toISOString().split('T')[0];
-      const hour = live.startAt?.getHours();
-      if (!date || !hour) {
-        return arr;
-      }
-      const key = `${date} ${hour}`;
-      if (!arr[key]) {
-        arr[key] = [];
-      }
-      arr[key].push(live);
+  const livesSortedByStartAt = lives?.toSorted((a, b) =>
+    a.startAt ? (b.startAt ? a.startAt.getTime() - b.startAt.getTime() : -1) : 1,
+  );
+  const livesStreamingNow = livesSortedByStartAt?.filter((live) => {
+    return live.liveStatus === 'live';
+  });
+  const livesUpcoming = livesSortedByStartAt?.filter((live) => {
+    return live.liveStatus === 'upcoming';
+  });
+  const livesUpcomingGroupedByStartAtHour = livesUpcoming?.reduce<Record<string, Video[]>>((arr, live) => {
+    const date = live.startAt?.toISOString().split('T')[0];
+    const hour = live.startAt?.getHours();
+    if (!date || !hour) {
       return arr;
-    }, {});
+    }
+    const key = `${date} ${hour}`;
+    if (!arr[key]) {
+      arr[key] = [];
+    }
+    arr[key].push(live);
+    return arr;
+  }, {});
 
-  return livesGroupedByStartAtHour ? (
+  return livesStreamingNow || livesUpcomingGroupedByStartAtHour ? (
     <div className='flex flex-col ml-12 min-w-[304px] flex-1'>
-      {Object.entries(livesGroupedByStartAtHour).map(([key, values]) => {
-        return (
-          <React.Fragment key={key}>
-            {values[0]?.startAt && <Splitter time={new Date(values[0].startAt.setMinutes(0, 0, 0))} />}
-            <LiveGroup lives={values} channels={channels} />
-          </React.Fragment>
-        );
-      })}
+      {livesStreamingNow && <LiveGroup lives={livesStreamingNow} channels={channels} />}
+      {livesUpcomingGroupedByStartAtHour &&
+        Object.entries(livesUpcomingGroupedByStartAtHour).map(([key, values]) => {
+          return (
+            <React.Fragment key={key}>
+              {values[0]?.startAt && <Splitter time={new Date(values[0].startAt.setMinutes(0, 0, 0))} />}
+              <LiveGroup lives={values} channels={channels} />
+            </React.Fragment>
+          );
+        })}
     </div>
   ) : (
     <></>
