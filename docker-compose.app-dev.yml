@@ -1,0 +1,9 @@
+services:
+  app-dev:
+    image: hikuohiku/hikuohiku:livetable-dev
+    env_file:
+      - .env
+      - .env.local
+      - .env.development.local
+    ports:
+      - '3000:3000'

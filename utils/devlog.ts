@@ -1,26 +1,17 @@
-type devlogParams = Parameters<typeof console.log>;
+const isDebug = process.env.DEBUG === 'true';
 
-const devlog = (...params: devlogParams) => {
-  if (process.env.NODE_ENV === 'development') {
-    console.log(...params);
-  }
-};
+function mkIfDebug<T extends (...args: any[]) => any>(fn: T) {
+  return (...args: Parameters<T>): ReturnType<T> | void => {
+    if (isDebug) {
+      return fn(...args);
+    }
+  };
+}
 
-type devTimeParams = Parameters<typeof console.time>;
+const devlog = mkIfDebug(console.log);
+const devDir = mkIfDebug(console.dir);
+const devTime = mkIfDebug(console.time);
+const devTimeEnd = mkIfDebug(console.timeEnd);
 
-const devTime = (...params: devTimeParams) => {
-  if (process.env.NODE_ENV === 'development') {
-    console.time(...params);
-  }
-};
-
-type devTimeEndParams = Parameters<typeof console.timeEnd>;
-
-const devTimeEnd = (...params: devTimeEndParams) => {
-  if (process.env.NODE_ENV === 'development') {
-    console.timeEnd(...params);
-  }
-};
-
-export { devTime, devTimeEnd };
+export { devTime, devTimeEnd, devDir };
 export default devlog;
