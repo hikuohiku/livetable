@@ -1,4 +1,5 @@
 import { getServerSession } from 'next-auth';
+import { Suspense } from 'react';
 
 import Header from '@/components/Header';
 import LiveTable from '@/components/LiveTable';
@@ -40,7 +41,9 @@ export default async function Page() {
       <Header user={googleUser} />
       <div className='relative flex flex-column justify-center top-16 mx-4'>
         {!session && <LoginButton />}
-        <LiveTable lives={lives} channels={channels} />
+        <Suspense>
+          <LiveTable lives={lives} channels={channels} />
+        </Suspense>
       </div>
     </>
   );
