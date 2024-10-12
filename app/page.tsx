@@ -38,7 +38,7 @@ export default async function Page() {
   return (
     <>
       <Header user={googleUser} />
-      <div className='relative flex flex-column top-16 mx-4'>
+      <div className='relative flex flex-column justify-center top-16 mx-4'>
         {!session && <LoginButton />}
         <LiveTable lives={lives} channels={channels} />
       </div>

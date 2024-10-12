@@ -7,7 +7,7 @@ interface ProfileCardProps {
 
 const ProfileCard = ({ onSignOutClick }: ProfileCardProps) => {
   return (
-    <div className='liveCard flex justify-center items-center gap-2 rounded-lg m-2 p-1 w-72'>
+    <div className='glass flex justify-center items-center gap-2 rounded-lg m-2 p-1 w-72'>
       <button onClick={onSignOutClick}>Sign Out</button>
     </div>
   );

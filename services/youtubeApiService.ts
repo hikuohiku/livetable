@@ -223,7 +223,7 @@ export class YoutubeApiService {
             key: this.apiKey,
             part: ['snippet', 'id'],
             id: channels.map((c) => c.channelId),
-            fields: 'items(snippet(title,thumbnails.default.url),id)',
+            fields: 'items(snippet(title,thumbnails.medium.url),id)',
           });
         }),
       );
