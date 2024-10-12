@@ -80,7 +80,7 @@ interface LiveGroupProps extends LiveTableProps {
 const LiveGroup = ({ lives, channels, columns }: LiveGroupProps) => {
   const gridStyle = columns
     ? { gridTemplateColumns: `repeat(${columns}, minmax(288px, 1fr))` }
-    : { gridTemplateColumns: `repeat('auto-fit', minmax(288px, 1fr))`, visibility: 'hidden' as const };
+    : { gridTemplateColumns: `repeat(auto-fit, minmax(288px, 1fr))`, visibility: 'hidden' as const };
   const livesSortedByStartAt =
     lives &&
     lives.flat().toSorted((a, b) => (a.startAt ? (b.startAt ? a.startAt.getTime() - b.startAt.getTime() : -1) : 1));
