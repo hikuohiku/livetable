@@ -24,9 +24,13 @@ const LiveTable = ({ lives, channels }: LiveTableProps) => {
       observer.disconnect();
     };
   }, []);
-  const tableColumnCount = useSyncExternalStore(subscribeResize, () => {
-    return tableRef.current?.clientWidth && Math.floor(tableRef.current?.clientWidth / 288);
-  });
+  const tableColumnCount = useSyncExternalStore(
+    subscribeResize,
+    () => {
+      return tableRef.current?.clientWidth && Math.floor(tableRef.current?.clientWidth / 288);
+    },
+    () => undefined,
+  );
 
   const livesSortedByStartAt = lives?.toSorted((a, b) =>
     a.startAt ? (b.startAt ? a.startAt.getTime() - b.startAt.getTime() : -1) : 1,
