@@ -9,7 +9,7 @@ interface UserIconProps {
 
 const UserIcon = ({ user }: UserIconProps) => {
   return (
-    <div className='w-10 h-10 livecard rounded-full m-4'>
+    <div className='w-10 h-10 glass rounded-full m-4'>
       {user?.thumbnail ? (
         <Image src={user.thumbnail} alt='User Icon' width={96} height={96} className='rounded-full border-glass' />
       ) : (
