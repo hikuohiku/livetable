@@ -27,7 +27,7 @@ const LiveTable = ({ lives, channels }: LiveTableProps) => {
   const tableColumnCount = useSyncExternalStore(
     subscribeResize,
     () => {
-      return tableRef.current?.clientWidth && Math.floor(tableRef.current?.clientWidth / 288);
+      return tableRef.current?.clientWidth ?? Math.floor(tableRef.current?.clientWidth / 288);
     },
     () => undefined,
   );
