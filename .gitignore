@@ -48,3 +48,6 @@ next-env.d.ts
 .pnp.*
 
 *storybook.log
+
+# direnv
+.direnv
