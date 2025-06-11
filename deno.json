@@ -1,0 +1,10 @@
+{
+  "unstable": ["unsafe-proto", "sloppy-imports"],
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"],
+    "strict": true,
+    "jsx": "preserve",
+    "checkJs": true
+  },
+  "exclude": ["node_modules"]
+}

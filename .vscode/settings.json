@@ -1,3 +1,6 @@
 {
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "deno.config": "deno.json",
+  "deno.enable": true,
+  "editor.defaultFormatter": "denoland.vscode-deno",
+  "prettier.enable": false
 }
