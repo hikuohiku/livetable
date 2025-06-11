@@ -1,12 +1,12 @@
-import Parser from 'rss-parser';
+import Parser from "rss-parser";
 
-import Channel from '@/types/entities/channel';
-import Video from '@/types/entities/video';
+import Channel from "@/types/entities/channel";
+import Video from "@/types/entities/video";
 
-const youtubeRssUrl = 'https://www.youtube.com/feeds/videos.xml?channel_id=';
+const youtubeRssUrl = "https://www.youtube.com/feeds/videos.xml?channel_id=";
 
 type CustomField = {
-  'yt:videoId': string;
+  "yt:videoId": string;
 };
 
 export class YoutubeRssService {
@@ -18,9 +18,9 @@ export class YoutubeRssService {
       // rss-parserのデフォルトで定義されないフィールドを定義する
       customFields: {
         item: [
-          ['yt:videoId', 'videoId'],
+          ["yt:videoId", "videoId"],
           // media:descriptionを直接取得する方法がわからなかったので親要素を取得してたどる
-          ['media:group', 'media:group', { keepArray: true }],
+          ["media:group", "media:group", { keepArray: true }],
         ],
       },
     });
@@ -28,11 +28,13 @@ export class YoutubeRssService {
 
   private async getFeed(channel: Channel) {
     try {
-      const feed = await this.parser.parseURL(youtubeRssUrl + channel.channelId);
+      const feed = await this.parser.parseURL(
+        youtubeRssUrl + channel.channelId,
+      );
       return feed;
     } catch (error) {
       // TODO: この辺勉強してちゃんと書く
-      console.error('Failed to get feed');
+      console.error("Failed to get feed");
       throw error;
     }
   }
@@ -41,21 +43,22 @@ export class YoutubeRssService {
     try {
       const feed = await this.getFeed(channel);
       const streams = feed.items.map((item) => {
-        const descriptionArray = (item['media:group']?.[0]?.['media:description'] as String[]) ?? '';
-        const description = descriptionArray.join('');
+        const descriptionArray =
+          (item["media:group"]?.[0]?.["media:description"] as String[]) ?? "";
+        const description = descriptionArray.join("");
         const stream: Video = {
           videoId: item.videoId,
           channelId: channel.channelId,
           title: item.title,
           description: description,
-          thumbnail: item['media:group']?.[0]?.['media:thumbnail']?.[0]?.$.url,
+          thumbnail: item["media:group"]?.[0]?.["media:thumbnail"]?.[0]?.$.url,
         };
         return stream;
       });
       // console.log(streams);
       return streams.slice(0, 5);
     } catch (error) {
-      console.error('Failed to get streams with RSS');
+      console.error("Failed to get streams with RSS");
       throw error;
     }
   }

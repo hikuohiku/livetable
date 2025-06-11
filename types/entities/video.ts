@@ -14,7 +14,7 @@ export default interface Video {
 }
 
 export type LiveStatus = (typeof liveStatuses)[number] | null;
-export const liveStatuses = ['live', 'upcoming', 'completed', 'none'] as const;
+export const liveStatuses = ["live", "upcoming", "completed", "none"] as const;
 
 /**
  * repositories

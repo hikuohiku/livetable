@@ -3,31 +3,31 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: '*.googleusercontent.com',
-        port: '',
+        protocol: "https",
+        hostname: "*.googleusercontent.com",
+        port: "",
       },
       {
-        protocol: 'https',
-        hostname: '*.ytimg.com',
-        port: '',
+        protocol: "https",
+        hostname: "*.ytimg.com",
+        port: "",
       },
       {
-        protocol: 'https',
-        hostname: '*.ggpht.com',
-        port: '',
+        protocol: "https",
+        hostname: "*.ggpht.com",
+        port: "",
       },
       {
-        protocol: 'https',
-        hostname: 'placehold.co',
-        port: '',
+        protocol: "https",
+        hostname: "placehold.co",
+        port: "",
       },
     ],
     dangerouslyAllowSVG: true,
-    contentDispositionType: 'attachment',
+    contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-  output: 'standalone',
+  output: "standalone",
 };
 
 export default nextConfig;

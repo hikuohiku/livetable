@@ -1,11 +1,11 @@
-import prisma from '@/lib/prismaClient';
+import prisma from "@/lib/prismaClient";
 import User, {
   GoogleUser,
   GoogleUserRepository,
   Subscription,
   SubscriptionRepository,
   UserRepository,
-} from '@/types/entities/user';
+} from "@/types/entities/user";
 
 export class PrismaUserRepository implements UserRepository {
   async findByUuid(uuid: string): Promise<User | null> {
@@ -25,17 +25,28 @@ export class PrismaUserRepository implements UserRepository {
   }
 
   async upsert(user: User): Promise<User> {
-    return prisma.user.upsert({ where: { uuid: user.uuid }, update: user, create: user });
+    return prisma.user.upsert({
+      where: { uuid: user.uuid },
+      update: user,
+      create: user,
+    });
   }
 
   async upsertByEmail(email: string, name?: string): Promise<User> {
-    return prisma.user.upsert({ where: { email }, update: { name }, create: { email, name } });
+    return prisma.user.upsert({
+      where: { email },
+      update: { name },
+      create: { email, name },
+    });
   }
 }
 
-export class PrismaGoogleUserRepository extends PrismaUserRepository implements GoogleUserRepository {
+export class PrismaGoogleUserRepository extends PrismaUserRepository
+  implements GoogleUserRepository {
   async find(user: User): Promise<GoogleUser | null> {
-    const googleUser = await prisma.googleUser.findUnique({ where: { userId: user.uuid } });
+    const googleUser = await prisma.googleUser.findUnique({
+      where: { userId: user.uuid },
+    });
     return googleUser && { ...user, ...googleUser };
   }
 
@@ -67,7 +78,11 @@ export class PrismaGoogleUserRepository extends PrismaUserRepository implements 
   async upsert(user: GoogleUser): Promise<GoogleUser> {
     const googleUser = await prisma.googleUser.upsert({
       where: { userId: user.uuid },
-      update: { accessToken: user.accessToken, refreshToken: user.refreshToken, thumbnail: user.thumbnail },
+      update: {
+        accessToken: user.accessToken,
+        refreshToken: user.refreshToken,
+        thumbnail: user.thumbnail,
+      },
       create: {
         userId: user.uuid,
         accessToken: user.accessToken,
@@ -91,13 +106,23 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
 
   async delete(subscription: Subscription): Promise<void> {
     prisma.subscription.delete({
-      where: { userId_channelId: { userId: subscription.userId, channelId: subscription.channelId } },
+      where: {
+        userId_channelId: {
+          userId: subscription.userId,
+          channelId: subscription.channelId,
+        },
+      },
     });
   }
 
   async upsert(subscription: Subscription): Promise<Subscription> {
     return prisma.subscription.upsert({
-      where: { userId_channelId: { userId: subscription.userId, channelId: subscription.channelId } },
+      where: {
+        userId_channelId: {
+          userId: subscription.userId,
+          channelId: subscription.channelId,
+        },
+      },
       update: subscription,
       create: subscription,
     });

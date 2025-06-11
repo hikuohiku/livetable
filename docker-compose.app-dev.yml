@@ -6,4 +6,4 @@ services:
       - .env.local
       - .env.development.local
     ports:
-      - '3000:3000'
+      - "3000:3000"

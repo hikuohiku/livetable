@@ -1,4 +1,4 @@
-const isDebug = process.env.DEBUG === 'true';
+const isDebug = process.env.DEBUG === "true";
 
 function mkIfDebug<T extends (...args: any[]) => any>(fn: T) {
   return (...args: Parameters<T>): ReturnType<T> | void => {
@@ -13,5 +13,5 @@ const devDir = mkIfDebug(console.dir);
 const devTime = mkIfDebug(console.time);
 const devTimeEnd = mkIfDebug(console.timeEnd);
 
-export { devTime, devTimeEnd, devDir };
+export { devDir, devTime, devTimeEnd };
 export default devlog;

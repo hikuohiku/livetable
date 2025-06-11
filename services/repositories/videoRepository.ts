@@ -1,16 +1,18 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from "@prisma/client";
 
-import prisma from '@/lib/prismaClient';
-import Video, { VideoRepository, liveStatuses } from '@/types/entities/video';
+import prisma from "@/lib/prismaClient";
+import Video, { liveStatuses, VideoRepository } from "@/types/entities/video";
 
 export class PrismaVideoRepository implements VideoRepository {
   async findByVideoId(videoId: string): Promise<Video | null> {
     const video = await prisma.video.findUnique({ where: { videoId } });
     return video
       ? {
-          ...video,
-          liveStatus: isLiveStatus(video.liveStatus) ? video.liveStatus : undefined,
-        }
+        ...video,
+        liveStatus: isLiveStatus(video.liveStatus)
+          ? video.liveStatus
+          : undefined,
+      }
       : null;
   }
 
@@ -24,12 +26,25 @@ export class PrismaVideoRepository implements VideoRepository {
 
   async save(video: Video): Promise<Video> {
     const createdVideo = await prisma.video.create({ data: video });
-    return { ...createdVideo, liveStatus: isLiveStatus(createdVideo.liveStatus) ? createdVideo.liveStatus : undefined };
+    return {
+      ...createdVideo,
+      liveStatus: isLiveStatus(createdVideo.liveStatus)
+        ? createdVideo.liveStatus
+        : undefined,
+    };
   }
 
   async update(video: Video): Promise<Video> {
-    const updatedVideo = await prisma.video.update({ where: { videoId: video.videoId }, data: video });
-    return { ...updatedVideo, liveStatus: isLiveStatus(updatedVideo.liveStatus) ? updatedVideo.liveStatus : undefined };
+    const updatedVideo = await prisma.video.update({
+      where: { videoId: video.videoId },
+      data: video,
+    });
+    return {
+      ...updatedVideo,
+      liveStatus: isLiveStatus(updatedVideo.liveStatus)
+        ? updatedVideo.liveStatus
+        : undefined,
+    };
   }
 
   async upsert(video: Video): Promise<Video> {
@@ -40,7 +55,9 @@ export class PrismaVideoRepository implements VideoRepository {
     });
     return {
       ...upsertedVideo,
-      liveStatus: isLiveStatus(upsertedVideo.liveStatus) ? upsertedVideo.liveStatus : undefined,
+      liveStatus: isLiveStatus(upsertedVideo.liveStatus)
+        ? upsertedVideo.liveStatus
+        : undefined,
     };
   }
 
@@ -50,12 +67,15 @@ export class PrismaVideoRepository implements VideoRepository {
         where: { videoId: video.videoId },
         update: video,
         create: video,
-      }),
+      })
     );
     await prisma.$transaction([...query]);
   }
 
-  async removeMany(videos: Video[], whereCriteria?: Prisma.VideoWhereInput): Promise<void> {
+  async removeMany(
+    videos: Video[],
+    whereCriteria?: Prisma.VideoWhereInput,
+  ): Promise<void> {
     const idList = videos.map((video) => {
       return video.videoId;
     });
@@ -66,8 +86,11 @@ export class PrismaVideoRepository implements VideoRepository {
   }
 }
 
-function isLiveStatus(liveStatus: string | undefined | null): liveStatus is Video['liveStatus'] {
-  return liveStatuses.includes(liveStatus as any) || liveStatus === null || liveStatus === undefined;
+function isLiveStatus(
+  liveStatus: string | undefined | null,
+): liveStatus is Video["liveStatus"] {
+  return liveStatuses.includes(liveStatus as any) || liveStatus === null ||
+    liveStatus === undefined;
 }
 
 const videoRepository = new PrismaVideoRepository();

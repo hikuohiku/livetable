@@ -1,5 +1,5 @@
-import Channel from '@/types/entities/channel';
-import Video from '@/types/entities/video';
+import Channel from "@/types/entities/channel";
+import Video from "@/types/entities/video";
 
 /**
  * domain service

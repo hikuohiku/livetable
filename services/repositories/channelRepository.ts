@@ -1,5 +1,5 @@
-import prisma from '@/lib/prismaClient';
-import Channel, { ChannelRepository } from '@/types/entities/channel';
+import prisma from "@/lib/prismaClient";
+import Channel, { ChannelRepository } from "@/types/entities/channel";
 
 export class PrismaChannelRepository implements ChannelRepository {
   async findByChannelId(channelId: string): Promise<Channel | null> {
@@ -11,11 +11,18 @@ export class PrismaChannelRepository implements ChannelRepository {
   }
 
   async update(channel: Channel): Promise<Channel> {
-    return prisma.channel.update({ where: { channelId: channel.channelId }, data: channel });
+    return prisma.channel.update({
+      where: { channelId: channel.channelId },
+      data: channel,
+    });
   }
 
   async upsert(channel: Channel): Promise<Channel> {
-    return prisma.channel.upsert({ where: { channelId: channel.channelId }, update: channel, create: channel });
+    return prisma.channel.upsert({
+      where: { channelId: channel.channelId },
+      update: channel,
+      create: channel,
+    });
   }
 }
 
