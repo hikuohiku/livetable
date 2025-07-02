@@ -6,6 +6,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 LiveTable is a Next.js frontend application that provides a timetable for YouTube live streams. This is part of a polyrepo architecture where the frontend communicates with a separate API server for data operations.
 
+## Polyrepo Architecture
+
+- **Frontend**: This repository - Next.js application
+- **API Server**: Separate repository - Backend API implementation  
+- **Database Schema**: https://github.com/hikuohiku/livetable-db (separate repository)
+- **API Specification**: https://github.com/hikuohiku/livetable-api-spec (separate repository)
+
 ## Architecture
 
 ### Core Technologies
