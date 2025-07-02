@@ -80,14 +80,16 @@ Required environment variables in `.env.local`:
 - Static asset serving and optimization
 
 ### API Server Dependencies
-The frontend expects the API server to provide these endpoints:
-- `GET /users/email/{email}/with-data` - Complete user data with subscriptions, channels, and videos
-- `GET /users/{uuid}/google` - Google user profile data
-- `GET /users/{uuid}/subscriptions` - User's channel subscriptions
-- `GET /channels/{channelId}` - Channel information
-- `POST /channels/find-many` - Bulk channel lookup
-- `GET /videos/channel/{channelId}` - Videos for a specific channel
-- `POST /videos/live-and-upcoming` - Active and scheduled streams
+The frontend expects the API server to implement the endpoints defined in the external API specification repository.
+
+**API Specification**: https://github.com/hikuohiku/livetable-api-spec (separate repository)
+
+Key endpoint categories:
+- **User Management**: User lookup, Google OAuth data, subscriptions
+- **Channel Management**: Channel information and bulk operations  
+- **Video Management**: Live streams, upcoming videos, video details
+
+Refer to the API specification repository for complete endpoint documentation, request/response schemas, and authentication requirements.
 
 ### Authentication Flow
 1. User authenticates via Google OAuth through NextAuth
