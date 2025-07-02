@@ -1,11 +1,11 @@
 "use client";
 import React, { useSyncExternalStore } from "react";
 
-import Channel from "@/types/entities/channel";
-import Video from "@/types/entities/video";
-
 import LiveCard from "./LiveCard";
 import Splitter from "./Splitter";
+
+import Channel from "@/types/entities/channel";
+import Video from "@/types/entities/video";
 
 interface LiveTableProps {
   channels?: (Channel | null)[] | null;

@@ -4,23 +4,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-LiveTable is a Next.js application that provides a timetable for YouTube live streams. Users can authenticate with Google OAuth, subscribe to YouTube channels, and track upcoming/live streams with scheduling notifications.
+LiveTable is a Next.js frontend application that provides a timetable for YouTube live streams. This is part of a polyrepo architecture where the frontend communicates with a separate API server for data operations.
 
 ## Architecture
 
 ### Core Technologies
 - **Frontend**: Next.js 14 with TypeScript, React, TailwindCSS, Material-UI
-- **Backend**: Next.js API routes with NextAuth.js for authentication
-- **Database**: MySQL with Prisma ORM
-- **External APIs**: YouTube Data API v3, YouTube RSS feeds
+- **Authentication**: NextAuth.js with JWT strategy
+- **HTTP Client**: Custom fetch-based API client
 - **Development**: Storybook for component development, Deno for additional tooling
 
 ### Key Components Structure
 ```
 app/                 # Next.js 13+ app directory
-├── api/auth/       # NextAuth.js authentication endpoints
+├── api/auth/       # NextAuth.js authentication endpoints (JWT mode)
 ├── layout.tsx      # Root layout with Background component
-└── page.tsx        # Main application page
+└── page.tsx        # Main application page (uses API clients)
 
 components/         # React components
 ├── LiveCard.tsx    # Individual stream card component
@@ -28,43 +27,30 @@ components/         # React components
 ├── Header.tsx      # Application header with user controls
 └── ...
 
-services/           # Business logic layer
-├── youtubeService.ts         # Main YouTube service facade
-├── youtubeApiService.ts      # YouTube Data API integration
-├── youtubeRssService.ts      # RSS feed parsing
-└── repositories/             # Data access layer
+lib/                # Core infrastructure
+├── apiClient.ts    # HTTP API client with auth headers
+└── types/
+    └── api.ts      # API response type definitions
+
+services/api/       # API client services
+├── userService.ts     # User-related API calls
+├── channelService.ts  # Channel-related API calls
+└── videoService.ts    # Video-related API calls
 
 types/              # TypeScript type definitions
 ├── entities/       # Domain models (User, Channel, Video)
-└── services/       # Service interfaces
+├── services/       # Service interfaces
+└── next-auth.d.ts  # NextAuth session type extensions
 ```
-
-### Database Schema
-The application uses Prisma with MySQL and includes these main entities:
-- **User**: OAuth users with Google integration
-- **Channel**: YouTube channels with metadata
-- **Video**: YouTube videos/streams with scheduling info
-- **Subscription**: User-channel relationships
-- **UserSchedule**: User notification preferences for specific videos
 
 ## Development Commands
 
 ### Basic Development
 ```bash
-npm run dev          # Start development server
-npm run build        # Build production application (includes Prisma generate)
+npm run dev          # Start development server (requires API server running)
+npm run build        # Build production application
 npm run start        # Start production server
 npm run lint         # Run ESLint
-```
-
-### Database Operations
-```bash
-# Database migrations (using dotenv for .env.local)
-npm run migrate      # Deploy migrations to database
-./node_modules/.bin/dotenv -e .env.local -- yarn prisma migrate dev --name <migration-name>  # Create new migration
-
-# Generate Prisma client (automatically run during build)
-npx prisma generate
 ```
 
 ### Storybook
@@ -75,33 +61,59 @@ npm run build-storybook  # Build Storybook for production
 
 ## Environment Setup
 
-The application requires these environment variables in `.env.local`:
-- `DATABASE_URL`: MySQL connection string
-- `NEXTAUTH_URL`: Application URL for NextAuth
-- `NEXTAUTH_SECRET`: NextAuth secret key
+**IMPORTANT**: This frontend application requires a separate API server to be running.
+
+Required environment variables in `.env.local`:
+- `NEXTAUTH_URL`: Frontend application URL (e.g., http://localhost:3000)
+- `NEXTAUTH_SECRET`: NextAuth secret key for JWT signing
 - `GOOGLE_CLIENT_ID`: Google OAuth client ID
 - `GOOGLE_CLIENT_SECRET`: Google OAuth client secret
-- `YOUTUBE_API_KEY`: YouTube Data API key
+- `NEXT_PUBLIC_API_BASE_URL`: API server URL (e.g., http://localhost:3001/api)
 
-## Service Layer Architecture
+## Polyrepo Architecture
 
-The application follows a service-oriented architecture:
+### Frontend Responsibilities
+- User interface and component rendering
+- Client-side routing and navigation
+- Authentication token management via NextAuth
+- HTTP API calls to backend services
+- Static asset serving and optimization
 
-1. **YoutubeService**: Main facade combining RSS and API data
-2. **youtubeRssService**: Fetches basic stream data from YouTube RSS
-3. **youtubeApiService**: Enriches data with detailed information from YouTube API
-4. **Repositories**: Handle database operations for each entity type
+### API Server Dependencies
+The frontend expects the API server to provide these endpoints:
+- `GET /users/email/{email}/with-data` - Complete user data with subscriptions, channels, and videos
+- `GET /users/{uuid}/google` - Google user profile data
+- `GET /users/{uuid}/subscriptions` - User's channel subscriptions
+- `GET /channels/{channelId}` - Channel information
+- `POST /channels/find-many` - Bulk channel lookup
+- `GET /videos/channel/{channelId}` - Videos for a specific channel
+- `POST /videos/live-and-upcoming` - Active and scheduled streams
+
+### Authentication Flow
+1. User authenticates via Google OAuth through NextAuth
+2. NextAuth creates JWT token with Google access token
+3. Frontend API client attaches JWT Bearer token to all API requests
+4. API server validates JWT and processes authenticated requests
 
 ## Key Development Patterns
 
 - Use absolute imports with `@/` prefix for internal modules
 - Components follow Material-UI patterns with Emotion styling
-- Database queries use Prisma Client with proper error handling
-- All external API calls are centralized in service classes
-- TypeScript interfaces define clear contracts between layers
+- All API calls go through centralized service classes in `services/api/`
+- HTTP client handles authentication headers automatically
+- TypeScript interfaces define clear contracts between frontend and API
+- Error handling includes fallbacks for API unavailability
+
+## Development Workflow
+
+1. **Start API Server**: Ensure the API server is running on the configured URL
+2. **Environment Setup**: Configure all required environment variables
+3. **Frontend Development**: Run `npm run dev` to start the Next.js development server
+4. **Component Development**: Use Storybook for isolated component development
+5. **API Integration**: Use API client services for all backend communication
 
 ## Testing and Quality
 
 - ESLint with Next.js config and additional plugins (prettier, unused-imports)
 - Storybook for component testing and documentation
-- Prisma migrations for database schema versioning
+- Type safety enforced between frontend and API contracts

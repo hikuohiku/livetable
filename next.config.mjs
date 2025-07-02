@@ -28,6 +28,14 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   output: "standalone",
+  async rewrites() {
+    return [
+      {
+        source: "/api/proxy/:path*",
+        destination: `${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001/api"}/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

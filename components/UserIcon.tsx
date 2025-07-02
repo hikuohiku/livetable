@@ -1,8 +1,10 @@
 "use client";
-import Image from "next/image";
-import { SVGProps, useState } from "react";
 import { Dialog } from "@headlessui/react";
+import Image from "next/image";
 import { signOut } from "next-auth/react";
+import { SVGProps, useState } from "react";
+
+
 import { GoogleUser } from "@/types/entities/user";
 
 interface UserIconProps {

@@ -1,6 +1,6 @@
 "use client";
-import { signIn } from "next-auth/react";
 import Google from "@mui/icons-material/Google";
+import { signIn } from "next-auth/react";
 
 interface LoginButtonProps {
   onClick: React.MouseEventHandler<HTMLButtonElement>;

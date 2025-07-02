@@ -4,10 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "migrate": "dotenv -e .env.local -- yarn prisma migrate deploy",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -17,16 +16,13 @@
     "@headlessui/react": "^1.7.18",
     "@mui/icons-material": "^5.15.10",
     "@mui/material": "^5.15.10",
-    "@prisma/client": "^5.18.0",
     "@types/uuid": "^9.0.8",
     "date-fns": "^4.1.0",
-    "googleapis": "^133.0.0",
-    "next": "14.1.0",
+    "next": "^14.2.30",
     "next-auth": "^4.24.6",
     "prettier": "^3.2.5",
     "react": "^18",
     "react-dom": "^18",
-    "rss-parser": "^3.13.0",
     "storybook": "^8.0.8",
     "uuid": "^9.0.1"
   },
@@ -45,7 +41,6 @@
     "@types/react-dom": "^18",
     "@vtsls/language-server": "^0.2.6",
     "autoprefixer": "^10.0.1",
-    "dotenv-cli": "^7.3.0",
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
     "eslint-config-prettier": "^9.1.0",
@@ -53,7 +48,6 @@
     "eslint-plugin-storybook": "^0.8.0",
     "eslint-plugin-unused-imports": "^4.1.4",
     "postcss": "^8",
-    "prisma": "^5.20.0",
     "tailwindcss": "^3.3.0",
     "typescript": "^5"
   }

@@ -1,8 +1,9 @@
-import Video from "@/types/entities/video";
-
 import LiveCard from "./LiveCard";
 
 import type { Meta, StoryObj } from "@storybook/react";
+
+
+import Video from "@/types/entities/video";
 
 const meta = {
   title: "LiveCard",
