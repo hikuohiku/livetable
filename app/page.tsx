@@ -1,12 +1,13 @@
 import { getServerSession } from "next-auth";
 import { Suspense } from "react";
 
-import { authOptions } from "./api/auth/[...nextauth]/route";
 
 import Header from "@/components/Header";
 import LiveTable from "@/components/LiveTable";
 import LoginButton from "@/components/LoginButton";
+import { authOptions } from "@/lib/auth";
 import userApiService from "@/services/api/userService";
+
 
 export default async function Page() {
   const session = await getServerSession(authOptions);

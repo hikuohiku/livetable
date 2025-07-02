@@ -1,9 +1,10 @@
 import { Inter } from "next/font/google";
 
+import Background from "@/components/Background";
+
 import type { Metadata } from "next";
 import type { Viewport } from "next/types";
 
-import Background from "@/components/Background";
 
 import "./globals.css";
 

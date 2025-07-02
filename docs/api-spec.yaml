@@ -1,0 +1,515 @@
+openapi: 3.0.3
+info:
+  title: LiveTable API Server
+  description: |
+    API server for LiveTable application that provides YouTube live stream management functionality.
+    This API handles user authentication, channel subscriptions, and video/stream data.
+  version: 1.0.0
+  contact:
+    name: LiveTable API Support
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:3001/api
+    description: Development server
+  - url: https://api.livetable.example.com/api
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+paths:
+  /users/email/{email}:
+    get:
+      summary: Find user by email
+      description: Retrieve user information by email address
+      parameters:
+        - name: email
+          in: path
+          required: true
+          schema:
+            type: string
+            format: email
+          example: user@example.com
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: null
+
+  /users/email/{email}/with-data:
+    get:
+      summary: Get user with all related data
+      description: Retrieve complete user data including subscriptions, channels, and videos
+      parameters:
+        - name: email
+          in: path
+          required: true
+          schema:
+            type: string
+            format: email
+          example: user@example.com
+      responses:
+        '200':
+          description: User data with related information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWithDataResponse'
+
+  /users/{uuid}/google:
+    get:
+      summary: Get Google user profile
+      description: Retrieve Google-specific user profile information
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Google user profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleUserResponse'
+
+  /users/{uuid}/subscriptions:
+    get:
+      summary: Get user subscriptions
+      description: Retrieve all channel subscriptions for a user
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: User subscriptions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionsResponse'
+
+  /channels/{channelId}:
+    get:
+      summary: Get channel by ID
+      description: Retrieve channel information by channel ID
+      parameters:
+        - name: channelId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: UC_vMYWcDjmfdpH6r4TTn1MQ
+      responses:
+        '200':
+          description: Channel found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  channel:
+                    $ref: '#/components/schemas/Channel'
+        '404':
+          description: Channel not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  channel:
+                    type: null
+
+  /channels/find-many:
+    post:
+      summary: Find multiple channels by IDs
+      description: Retrieve multiple channels by providing an array of channel IDs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                channelIds:
+                  type: array
+                  items:
+                    type: string
+                  example: ["UC_vMYWcDjmfdpH6r4TTn1MQ", "UC0TXe_LYZ4scaW2XMyi5_kw"]
+              required:
+                - channelIds
+      responses:
+        '200':
+          description: Channels found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelsResponse'
+
+  /videos/channel/{channelId}:
+    get:
+      summary: Get videos by channel ID
+      description: Retrieve all videos for a specific channel
+      parameters:
+        - name: channelId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: UC_vMYWcDjmfdpH6r4TTn1MQ
+      responses:
+        '200':
+          description: Videos found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideosResponse'
+
+  /videos/live-and-upcoming:
+    post:
+      summary: Get live and upcoming videos
+      description: Retrieve live and upcoming videos for multiple channels
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                channelIds:
+                  type: array
+                  items:
+                    type: string
+                  example: ["UC_vMYWcDjmfdpH6r4TTn1MQ", "UC0TXe_LYZ4scaW2XMyi5_kw"]
+              required:
+                - channelIds
+      responses:
+        '200':
+          description: Live and upcoming videos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideosResponse'
+
+  /videos/{videoId}:
+    get:
+      summary: Get video by ID
+      description: Retrieve video information by video ID
+      parameters:
+        - name: videoId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 7K5lUvMrjik
+      responses:
+        '200':
+          description: Video found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  video:
+                    $ref: '#/components/schemas/Video'
+        '404':
+          description: Video not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  video:
+                    type: null
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from NextAuth authentication
+
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Operation successful"
+      required:
+        - success
+
+    User:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        name:
+          type: string
+          nullable: true
+          example: "John Doe"
+      required:
+        - uuid
+        - email
+
+    GoogleUser:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          properties:
+            refreshToken:
+              type: string
+              nullable: true
+              description: Google OAuth refresh token
+            accessToken:
+              type: string
+              nullable: true
+              description: Google OAuth access token
+            thumbnail:
+              type: string
+              nullable: true
+              format: uri
+              example: "https://lh3.googleusercontent.com/a/example"
+
+    Subscription:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        channelId:
+          type: string
+          example: UC_vMYWcDjmfdpH6r4TTn1MQ
+      required:
+        - userId
+        - channelId
+
+    Channel:
+      type: object
+      properties:
+        channelId:
+          type: string
+          example: UC_vMYWcDjmfdpH6r4TTn1MQ
+        channelName:
+          type: string
+          nullable: true
+          example: "Iroha ch. 風真いろは - holoX -"
+        handle:
+          type: string
+          nullable: true
+          example: "@kazamairohach"
+        thumbnail:
+          type: string
+          nullable: true
+          format: uri
+          example: "https://yt3.ggpht.com/example=s88-c-k-c0x00ffffff-no-rj"
+      required:
+        - channelId
+
+    Video:
+      type: object
+      properties:
+        videoId:
+          type: string
+          example: 7K5lUvMrjik
+        channelId:
+          type: string
+          example: UC0TXe_LYZ4scaW2XMyi5_kw
+        title:
+          type: string
+          nullable: true
+          example: "【111万人耐久歌枠】1,111,111人目指して歌う！"
+        description:
+          type: string
+          nullable: true
+          example: "1,111,111人の瞬間を皆と迎えたい！"
+        url:
+          type: string
+          nullable: true
+          format: uri
+          example: "https://www.youtube.com/watch?v=7K5lUvMrjik"
+        thumbnail:
+          type: string
+          nullable: true
+          format: uri
+          example: "https://i4.ytimg.com/vi/7K5lUvMrjik/hqdefault.jpg"
+        startAt:
+          type: string
+          nullable: true
+          format: date-time
+          example: "2024-10-09T10:02:02.000Z"
+        endAt:
+          type: string
+          nullable: true
+          format: date-time
+          example: "2024-10-09T12:02:02.000Z"
+        liveStatus:
+          type: string
+          nullable: true
+          enum: ["live", "upcoming", "completed", "none"]
+          example: "live"
+      required:
+        - videoId
+        - channelId
+
+    GoogleUserResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/GoogleUser'
+
+    SubscriptionsResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Subscription'
+
+    ChannelsResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Channel'
+
+    VideosResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Video'
+
+    UserWithDataResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                user:
+                  $ref: '#/components/schemas/GoogleUser'
+                  nullable: true
+                subscriptions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Subscription'
+                channels:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Channel'
+                videos:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Video'
+              required:
+                - user
+                - subscriptions
+                - channels
+                - videos
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "An error occurred"
+        error:
+          type: string
+          example: "Detailed error information"
+      required:
+        - success
+        - message
+
+  responses:
+    UnauthorizedError:
+      description: Authentication information is missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            message: "Unauthorized"
+            error: "Invalid or missing JWT token"
+
+    NotFoundError:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            message: "Resource not found"
+            error: "The requested resource does not exist"
+
+    ValidationError:
+      description: Invalid input data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            message: "Validation error"
+            error: "Invalid email format"
+
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            message: "Internal server error"
+            error: "An unexpected error occurred"
